@@ -5,7 +5,7 @@
             <main class="px-lg">
                 <div style="width:55%;">
                     <img src="../assets/img/home_logo.png" class="d-block mx-auto mb-xl" width="300px" height="auto" alt="logo">
-                    <div class="room-intro px-md">
+                    <div class="room-intro px-md" @click="pushToRoom">
                         <h3 class="title">客房介紹</h3>
                         <div class="d-flex justify-content-between mb-sm">
                             <img src="../assets/img/room.png" alt="room">
@@ -34,6 +34,11 @@ export default {
     components: {
         HomeNavbar,
         Footer,
+    },
+    methods: {
+        pushToRoom () {
+            this.$router.push('/room/123');
+        }
     }
 }
 </script>
@@ -64,12 +69,12 @@ export default {
     }
 }
 
-.leaves-bg {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 400px;
-    height: 400px;
-    background: url('../assets/img/leaves_bg.png') no-repeat 80px -80px;
-}
+// .leaves-bg {
+//     position: absolute;
+//     bottom: 0;
+//     right: 0;
+//     width: 400px;
+//     height: 400px;
+//     background: url('../assets/img/leaves_bg.png') no-repeat 80px -80px;
+// }
 </style>

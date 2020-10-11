@@ -28,6 +28,9 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+html {
+	font-family: 'Microsoft JhengHei', sans-serif;
+}
 body {
 	line-height: 1;
 }
@@ -46,11 +49,13 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-
 a {
 	text-decoration: none;
 }
-
+button {
+	border: 0;
+	cursor: pointer;
+}
 * {
 	box-sizing: border-box;
 }

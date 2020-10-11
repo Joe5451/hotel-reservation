@@ -1,9 +1,9 @@
 <template>
     <nav class="navbar">
-        <ul class="d-flex justify-content-end py-sm px-lg">
+        <ul class="d-flex justify-content-end py-xs px-lg">
             <li>
                 <router-link to="/" class="d-flex align-items-center">
-                    <img src="../assets/img/logo.png" alt="logo">
+                    <img src="../assets/img/logo.png" alt="logo" width="50px" height="auto" class="mr-xs">
                     綠柳宿旅
                 </router-link>
             </li>
@@ -48,19 +48,21 @@
                 margin-right: auto;
             }
             
-            img {
-                width: 2rem;
-                height: 2rem;
-                margin-right: 0.5rem;
+            &:not(:first-child) {
+                &>img {
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    margin-right: 0.5rem;
+                }
+    
+                a:hover {
+                    color: #419D78;
+                }
             }
 
             a {
                 color: #959CC4;
                 font-weight: bold;
-
-                &:hover {
-                    color: #419D78;
-                }
             }
         }
     }
