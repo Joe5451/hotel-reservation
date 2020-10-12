@@ -28,6 +28,29 @@
     background: url('assets/img/leaves_bg.png') no-repeat 80px -80px;
 }
 
+.room-title {
+    span {
+        background: #F73131;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    button {
+        margin-left: auto;
+        background: #419D78;
+        color: #fff;
+        font-size: 1.5rem;
+        padding: 6px 16px;
+    }
+}
+
 // * {
 //   border: 1px solid red !important;
 // }

@@ -5,7 +5,7 @@
             <div class="room-title d-flex align-items-center mb-md">
                 <span class="mr-sm">HOT</span>
                 <h3>房間名稱：Single Room</h3>
-                <button class="submit-btn">預定</button>
+                <button class="submit-btn" @click="pushToReservation">預定</button>
             </div>
 
             <div class="room-imgs-container d-flex mb-md">
@@ -13,8 +13,8 @@
                     <img src="../assets/img/room2.png" alt="room picture">
                 </div>
                 <div class="d-flex flex-column pl-xs">
-                    <img src="../assets/img/room2.png" alt="room picture" class="pb-xs">
-                    <img src="../assets/img/room2.png" alt="room picture" class="pt-xs">
+                    <img src="../assets/img/room2.png" alt="room picture" class="mb-xs">
+                    <img src="../assets/img/room2.png" alt="room picture" class="mt-xs">
                 </div>
             </div>
 
@@ -119,6 +119,11 @@ export default {
     components: {
         Navbar,
         Footer,
+    },
+    methods: {
+        pushToReservation () {
+            this.$router.push('/reservation/joe123');
+        }
     }
 }
 </script>
@@ -149,6 +154,7 @@ export default {
 
 .room-imgs-container {
     height: 570px;
+    
     &>div:nth-child(1) {
         width: 60%;
     }
@@ -157,7 +163,7 @@ export default {
         width: 40%;
 
         img {
-            height: 50%;
+            height: calc(50% - 10px);
         }
     }
 
@@ -165,6 +171,7 @@ export default {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border: 1px solid rgba(0, 0, 0, 0.5);
     }
 }
 
@@ -254,7 +261,7 @@ export default {
 
 .check-time {
     .title {
-        width: 100px;
+        width: 120px;
     }
 
     .check-time-bar {
@@ -281,6 +288,7 @@ export default {
                 &:after {
                     content: '';
                     position: absolute;
+                    z-index: -1;
                     bottom: 0;
                     left: 50%;
                     transform: translate(-50%, 50%) rotate(45deg);
@@ -322,7 +330,7 @@ export default {
 .descriptionShort {
     background: #2D3047;
     color: #fff;
-    padding: 25px;
+    padding: 40px 25px;
 
     ul {
         list-style: square inside;

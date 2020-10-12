@@ -13,6 +13,10 @@ const routes = [
   {
     path: '/room/:id',
     component: () => import('../views/Room.vue')
+  },
+  {
+    path: '/reservation/:id',
+    component: () => import('../views/Reservation.vue')
   }
   // {
   //   path: '/about',
