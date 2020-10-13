@@ -38,7 +38,13 @@ export default {
     methods: {
         pushToRoom () {
             this.$router.push('/room/123');
+        },
+        getRoomsInfo () {
+            this.$store.dispatch('getAllRoomsInfo');
         }
+    },
+    created () {
+        this.getRoomsInfo();
     }
 }
 </script>
