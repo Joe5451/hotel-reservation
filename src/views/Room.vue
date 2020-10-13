@@ -323,7 +323,9 @@ export default {
 }
 
 .description {
-    line-height: 1.5;
+    letter-spacing: 1px;
+    text-indent: 50px;
+    line-height: 2;
     color: #8F8F8F;
 }
 

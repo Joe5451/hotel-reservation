@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="row">
-                    <button class="submit-btn">確認訂房</button>
+                    <button class="submit-btn" @click.prevent="pushToResult">確認訂房</button>
                 </div>
             </form>
         </main>
@@ -116,6 +116,11 @@ export default {
     components: {
         Navbar,
         Footer,
+    },
+    methods: {
+        pushToResult () {
+            this.$router.push('/reservation/joe123/result');
+        }
     }
 }
 </script>
@@ -165,6 +170,7 @@ export default {
             color: #8F8F8F;
             line-height: 3;
             font-size: 12px;
+            text-indent: 30px;
         }
     }
 
