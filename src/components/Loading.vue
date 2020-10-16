@@ -1,7 +1,7 @@
 <template>
-    <transition>
+    <!-- <transition> -->
         <div class="loading" v-if="isLoading" ></div>
-    </transition>
+    <!-- </transition> -->
 </template>
 
 <script>
@@ -31,8 +31,8 @@ export default {
     }
 }
 
-.v-leave-active {
-    transition: opacity 1.5s;
-}
+// .v-leave-active {
+//     transition: opacity 1.5s;
+// }
 </style>
 

@@ -7,15 +7,21 @@
                     <img src="../assets/img/home_logo.png" class="d-block mx-auto mb-xl" width="300px" height="auto" alt="logo">
                     <div class="room-intro px-md" @click="pushToRoom">
                         <h3 class="title">客房介紹</h3>
-                        <div class="d-flex justify-content-between mb-sm">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <div class="room-img" v-for="room in roomsInfo" :key="room.id">
+                                <img :src="room.imageUrl" alt="room">
+                                <div class="more">
+                                    <h3>{{ room.name }}</h3>
+                                    <p>{{ '$' + room.normalDayPrice + '~' + '$' + room.holidayPrice}}</p>
+                                    <router-link to="/">more ➜</router-link>
+                                </div>
+                            </div>
+                            <!-- <img src="../assets/img/room.png" alt="room">
                             <img src="../assets/img/room.png" alt="room">
                             <img src="../assets/img/room.png" alt="room">
                             <img src="../assets/img/room.png" alt="room">
-                        </div>
-                        <div class="d-flex justify-content-between">
                             <img src="../assets/img/room.png" alt="room">
-                            <img src="../assets/img/room.png" alt="room">
-                            <img src="../assets/img/room.png" alt="room">
+                            <img src="../assets/img/room.png" alt="room"> -->
                         </div>
                     </div>
                 </div>
@@ -34,6 +40,11 @@ export default {
     components: {
         HomeNavbar,
         Footer,
+    },
+    computed: {
+        roomsInfo () {
+            return this.$store.state.rooms;
+        }
     },
     methods: {
         pushToRoom () {
@@ -68,19 +79,62 @@ export default {
             text-align: center;
             margin-bottom: 15px;
         }
+        
+        .room-img {
+            width: calc((100%/3) - 30px/3);
+            height: 124px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+
+            &:hover {
+                .more {
+                    bottom: 0;
+                }
+            }
+
+            .more {
+                background: #28614A;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                bottom: 100%;
+                left: 0;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px;
+                transition: all 0.7s;
+
+                h3 {
+                    color: #fff;
+                    font-weight: bold;
+                }
+
+                p {
+                    color: #7EC8AA;
+                }
+
+                a {
+                    display: block;
+                    width: 100px;
+                    padding: 0px 12px;
+                    border-radius: 20px;
+                    background: #fff;
+                    color: #28614A;
+                }
+            }
+
+
+        }
 
         img {
-            width: calc((100%/3) - 30px/3);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     }
 }
-
-// .leaves-bg {
-//     position: absolute;
-//     bottom: 0;
-//     right: 0;
-//     width: 400px;
-//     height: 400px;
-//     background: url('../assets/img/leaves_bg.png') no-repeat 80px -80px;
-// }
 </style>

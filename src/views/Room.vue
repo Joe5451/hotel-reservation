@@ -44,8 +44,10 @@
                     </div>
                 </div>
                 <div>
-                    <div class="date checkin"></div>
-                    <div class="date checkout"></div>
+                    <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" type="inline"></vue-datepicker-local>
+                    <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" type="inline"></vue-datepicker-local>
+                    <!-- <div class="date checkin"></div> -->
+                    <!-- <div class="date checkout"></div> -->
                     <div class="details">
                         <div class="total-price my-md">
                             <span class="mr-md">總價</span>
@@ -114,11 +116,19 @@
 <script>
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import VueDatepickerLocal from 'vue-datepicker-local';
 
 export default {
     components: {
         Navbar,
         Footer,
+        VueDatepickerLocal,
+    },
+    data () {
+        return {
+            checkinTime: new Date(),
+            checkoutTime: new Date(),
+        }
     },
     methods: {
         pushToReservation () {

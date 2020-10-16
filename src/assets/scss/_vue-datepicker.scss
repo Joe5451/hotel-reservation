@@ -1,0 +1,82 @@
+
+
+.datepicker:before {
+    display: none !important;
+}
+
+.datepicker-popup {
+    padding: 0 !important;
+
+    .calendar {
+        width: 290px;
+        height: 290px;
+    }
+
+    .calendar-prev-year-btn, .calendar-next-year-btn {
+        display: none;
+    }
+
+    .calendar-head {
+        a {
+            color: #fff;
+        }
+    }
+
+    .calendar-body {
+        width: 100%;
+        height: 100%;
+        padding: 5px;
+
+        a.calendar-date, a.calendar-week {
+            color: #fff;
+        }
+    }
+}
+
+.checkin-datepicker {
+    margin-right: 100px;
+
+    .calendar-head {
+        background: #419D78;
+    }
+
+    .calendar-body {
+        background: #7EC8AA;
+
+        a.calendar-date-out {
+            color: #94E1C2;
+        }
+
+        a.calendar-date-selected {
+            background: #29684F;
+            border: 2px solid #7EC8AA;
+            outline: 1px solid #29684F;
+            transform: scale(0.8);
+            font-size: 15px;
+            line-height: 22.39px;
+        }
+    }
+}
+
+.checkout-datepicker {
+    .calendar-head {
+        background: #2D3047;
+    }
+
+    .calendar-body {
+        background: #959CC4;
+
+        a.calendar-date-out {
+            color:#AAB3E5;
+        }
+
+        a.calendar-date-selected {
+            background: #2D3047;
+            border: 2px solid #959CC4;
+            outline: 1px solid #2D3047;
+            transform: scale(0.8);
+            font-size: 15px;
+            line-height: 22.39px;
+        }
+    }
+}

@@ -7,16 +7,25 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     isLoading: false,
-    
+    rooms: [],
   },
   mutations: {
     LOADING (state, status) {
       state.isLoading = status;
+    },
+    setRoomsInfo (state, status) {
+      state.rooms = status;
     }
   },
   actions: {
     updateLoading (context, status) {
-      context.commit('LOADING', status);
+      if (status == false) {
+        setTimeout(() => {
+          context.commit('LOADING', status);
+        }, 700);
+      } else {
+        context.commit('LOADING', status);
+      }
     },
     getAllRoomsInfo (context, status) {
       context.commit('LOADING', true);
@@ -29,8 +38,13 @@ export default new Vuex.Store({
           'accept': 'application/json'
         }
       }).then(res => {
-        console.log(res.data.items);
-        context.commit('LOADING', false);
+        context.commit('setRoomsInfo', res.data.items);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => {
+        context.dispatch('updateLoading', false);
       })
     }
   },
