@@ -5,7 +5,7 @@
             <main class="px-lg">
                 <div style="width:55%;">
                     <img src="../assets/img/home_logo.png" class="d-block mx-auto mb-xl" width="300px" height="auto" alt="logo">
-                    <div class="room-intro px-md" @click="pushToRoom">
+                    <div class="room-intro px-md">
                         <h3 class="title">客房介紹</h3>
                         <div class="d-flex flex-wrap justify-content-between">
                             <div class="room-img" v-for="room in roomsInfo" :key="room.id">
@@ -13,7 +13,7 @@
                                 <div class="more">
                                     <h3>{{ room.name }}</h3>
                                     <p>{{ '$' + room.normalDayPrice + '~' + '$' + room.holidayPrice}}</p>
-                                    <router-link to="/">more ➜</router-link>
+                                    <router-link :to="`/room/${room.id}`">more ➜</router-link>
                                 </div>
                             </div>
                             <!-- <img src="../assets/img/room.png" alt="room">
@@ -124,6 +124,7 @@ export default {
                     border-radius: 20px;
                     background: #fff;
                     color: #28614A;
+                    cursor: pointer;
                 }
             }
 

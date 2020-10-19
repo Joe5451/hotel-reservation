@@ -21,33 +21,42 @@
             <div class="reservation-select mb-lg">
                 <div class="select-bar d-flex justify-content-between mb-sm">
                     <div class="check-date">
-                        <div class="checkin">
+                        <div class="checkin" @click="showTime">
                             <span>入住日期</span>
-                            <div>2020年10月11日</div>
+                            <vue-datepicker-local v-model="checkinTime" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" disabled></vue-datepicker-local>
                         </div>
                         <div class="checkout">
                             <span>退房日期</span>
-                            <div>2020年10月22日</div>
+                            <vue-datepicker-local v-model="checkoutTime" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" disabled></vue-datepicker-local>
                         </div>
                     </div>
                     <div class="room-amount">
                         <span>客房</span>
-                        <div>1間</div>
+                        <select name="" id="">
+                            <option v-for="n in 10" :value="n" :key="n">{{n}}間</option>
+                        </select>
+                        <!-- <div>1間</div> -->
                     </div>
                     <div class="adult-amount">
                         <span>成人</span>
-                        <div>1人</div>
+                        <select name="" id="">
+                            <option v-for="n in 11" :value="n-1" :key="n-1">{{n-1}}人</option>
+                        </select>
+                        <!-- <div>1人</div> -->
                     </div>
                     <div class="child-amount">
                         <span>小孩</span>
-                        <div>0人</div>
+                        <select name="" id="">
+                            <option v-for="n in 11" :value="n-1" :key="n-1">{{n-1}}人</option>
+                        </select>
+                        <!-- <div>0人</div> -->
                     </div>
                 </div>
                 <div>
-                    <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" type="inline"></vue-datepicker-local>
-                    <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" type="inline"></vue-datepicker-local>
-                    <!-- <div class="date checkin"></div> -->
-                    <!-- <div class="date checkout"></div> -->
+                    <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" type="inline" :disabled-date="checkin_disabledDate"></vue-datepicker-local>
+                    <template >
+                    <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" type="inline" :disabled-date="checkout_disabledDate"></vue-datepicker-local>
+                    </template>
                     <div class="details">
                         <div class="total-price my-md">
                             <span class="mr-md">總價</span>
@@ -133,7 +142,36 @@ export default {
     methods: {
         pushToReservation () {
             this.$router.push('/reservation/joe123');
+        },
+        checkin_disabledDate(time) {            
+            const now = new Date();
+            const now_year = now.getFullYear();
+            const now_month = now.getMonth();
+            const now_date = now.getDate();
+            const now_time = new Date(now_year, now_month, now_date);
+
+            return time < now_time;
+        },
+        checkout_disabledDate(time) {
+            const checkin = this.checkinTime;
+            const checkin_year = checkin.getFullYear();
+            const checkin_month = checkin.getMonth();
+            const checkin_date = checkin.getDate();
+            const checkin_time = new Date(checkin_year, checkin_month, checkin_date + 1);
+            
+            return  time < checkin_time;
+        },
+        showTime() {
+            console.log('checkin: ', this.checkinTime);
+            console.log('checkout:', this.checkoutTime);
+        },
+        getRoomInfo () {
+            const id = this.$route.params.id;
+            this.$store.dispatch('getSingleRoom', id);
         }
+    },
+    created () {
+        // this.getRoomInfo();
     }
 }
 </script>
@@ -185,7 +223,8 @@ export default {
     }
 }
 
-.check-date>div, .room-amount, .adult-amount, .child-amount {
+// .check-date>div, .room-amount, .adult-amount, .child-amount {
+.room-amount, .adult-amount, .child-amount {
     display: flex;
     align-items: center;
 
@@ -194,9 +233,21 @@ export default {
         margin-right: 8px;
     }
 
-    div {
+    div, select {
         padding: 4px 16px;
         border: 1px solid rgba(0,0,0,.3);
+        position: relative;
+    }
+
+    select:after {
+        position: absolute;
+        content: "";
+        top: 14px;
+        right: 10px;
+        width: 0;
+        height: 0;
+        border: 6px solid transparent;
+        border-color: #2D3047 transparent transparent transparent;
     }
 }
 
@@ -208,6 +259,7 @@ export default {
     span {
         border-bottom: 3px solid #419D78;
         margin-right: 12px;
+        padding: 4px 16px;
     }
 
     &.checkout {
