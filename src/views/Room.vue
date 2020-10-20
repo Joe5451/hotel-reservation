@@ -33,21 +33,21 @@
                     </div>
                     <div class="room-amount">
                         <span>客房</span>
-                        <select name="" id="">
+                        <select v-model="room_amount" name="" id="">
                             <option v-for="n in 10" :value="n" :key="n">{{n}}間</option>
                         </select>
                         <!-- <div>1間</div> -->
                     </div>
                     <div class="adult-amount">
                         <span>成人</span>
-                        <select name="" id="">
+                        <select v-model="adult_amount" name="" id="">
                             <option v-for="n in 11" :value="n-1" :key="n-1">{{n-1}}人</option>
                         </select>
                         <!-- <div>1人</div> -->
                     </div>
                     <div class="child-amount">
                         <span>小孩</span>
-                        <select name="" id="">
+                        <select v-model="child_amount" name="" id="">
                             <option v-for="n in 11" :value="n-1" :key="n-1">{{n-1}}人</option>
                         </select>
                         <!-- <div>0人</div> -->
@@ -133,7 +133,7 @@
                             <li>平日(一~四)價格：1380</li> -->
 
                             <li>床型：{{roomInfo.descriptionShort.Bed[0]}}</li>
-                            <li>房客人數限制： {{roomInfo.descriptionShort.GuestMin}}~{{roomInfo.descriptionShort.GuestMin}} 人</li>
+                            <li>房客人數限制： {{roomInfo.descriptionShort.GuestMin}}~{{roomInfo.descriptionShort.GuestMax}} 人</li>
                             <li>衛浴數量： {{roomInfo.descriptionShort['Private-Bath']}} 間</li>
                             <li>房間大小： {{roomInfo.descriptionShort.Footage}} 平方公尺</li>
                             <li>假日(五~日)價格：{{roomInfo.normalDayPrice}}</li>
@@ -168,7 +168,7 @@ export default {
             
             let total = 0;
             let checkin = new Date(this.checkinTime);
-            let checkout = this.checkoutTime;
+            let checkout = new Date(this.checkoutTime);
             while (checkin < checkout) {
                 if ((checkin.getDay() != 0) && (checkin.getDay() != 5) && (checkin.getDay() != 6)) {
                     total += this.roomInfo.normalDayPrice;
@@ -184,6 +184,7 @@ export default {
     },
     data () {
         return {
+            id: '',
             checkinTime: new Date(),
             checkoutTime: new Date(),
             local: {
@@ -198,6 +199,9 @@ export default {
                 cancelTip: 'cancel',
                 submitTip: 'confirm'
             },
+            room_amount: 1,
+            adult_amount: 0,
+            child_amount: 0,
         }
     },
     methods: {
@@ -226,21 +230,50 @@ export default {
         //     console.log('checkin: ', this.checkinTime);
         //     console.log('checkout:', this.checkoutTime);
         // },
-        getRoomInfo () {
-            const id = this.$route.params.id;
+        getRoomInfo (id) {
+            // const id = this.$route.params.id;
             this.$store.dispatch('getSingleRoom', id);
         },
         setBookingDate () {
+            const GuestMax = this.roomInfo.descriptionShort.GuestMax;
             const bookingDate =  [
                     this.checkinTime,
                     this.checkoutTime
             ];
+            const reservation_info = {
+                room: this.room_amount,
+                adult: this.adult_amount,
+                child: this.child_amount,
+                max: this.room_amount * GuestMax,
+                total: this.total_price,
+                success: function() {
+                    if (this.max < this.adult + this.child || this.adult + this.child <= 0) return false;
+                    else return true;
+                },
+            };
+            let checkin = new Date(this.checkinTime);
+            let checkout = new Date(this.checkoutTime);
 
-            this.$store.commit('setCurrentBooking', bookingDate);
-        }
+            //  && reservation_amount.success()
+
+            if (checkin.setDate(checkin.getDate()+1) <= checkout) {
+                if (reservation_info.success()) {
+                    this.$store.commit('setCurrentBooking', bookingDate);
+                    this.$router.push(`/reservation/${this.id}`);
+                } else {
+                    alert('入住人數大於或小於房間限制');
+                }
+            } else {
+                console.log('失敗');
+                console.log(checkin.getMilliseconds(), checkout.getMilliseconds());
+                alert('請確認正確訂房退房時間!');
+            }
+
+        },
     },
     created () {
-        this.getRoomInfo();
+        this.id = this.$route.params.id;
+        this.getRoomInfo(this.id);
         this.checkoutTime.setDate(this.checkinTime.getDate()+1);
     }
 }
