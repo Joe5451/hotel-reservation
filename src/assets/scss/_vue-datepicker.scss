@@ -8,16 +8,15 @@
     background: #fff !important;
     color: #2D3047 !important;
     width: 200px !important;
-    padding: 0 0 0 45px !important;
-    font-size: 16px !important;
+    padding: 0 0 0 60px !important;
 }
 
 .datepicker-popup {
     padding: 0 !important;
 
     .calendar {
-        width: 290px;
-        height: 290px;
+        width: 308px;
+        height: 308px;
     }
 
     .calendar-prev-year-btn, .calendar-next-year-btn {
@@ -32,7 +31,7 @@
 
     .calendar-body {
         width: 100%;
-        height: 100%;
+        height: 274px;
         padding: 5px;
 
         a.calendar-date, a.calendar-week {
@@ -51,7 +50,7 @@
 }
 
 .checkin-datepicker {
-    margin-right: 100px;
+    margin-right: 70px;
 
     .calendar-head {
         background: #419D78;

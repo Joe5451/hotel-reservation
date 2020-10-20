@@ -4,8 +4,9 @@
         <main class="px-lg mt-lg pb-xl">
             <div class="room-title d-flex align-items-center mb-md">
                 <span class="mr-sm">HOT</span>
-                <h3>房間名稱：Single Room</h3>
-                <button class="submit-btn" @click="pushToReservation">預定</button>
+                <!-- <h3>房間名稱：Single Room</h3> -->
+                <h3>房間名稱：{{roomInfo.name}}</h3>
+                <button class="submit-btn" @click="setBookingDate">預定</button>
             </div>
 
             <div class="room-imgs-container d-flex mb-md">
@@ -21,7 +22,7 @@
             <div class="reservation-select mb-lg">
                 <div class="select-bar d-flex justify-content-between mb-sm">
                     <div class="check-date">
-                        <div class="checkin" @click="showTime">
+                        <div class="checkin">
                             <span>入住日期</span>
                             <vue-datepicker-local v-model="checkinTime" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" disabled></vue-datepicker-local>
                         </div>
@@ -53,17 +54,18 @@
                     </div>
                 </div>
                 <div>
-                    <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" type="inline" :disabled-date="checkin_disabledDate"></vue-datepicker-local>
+                    <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" type="inline" :disabled-date="checkin_disabledDate" :local="local"></vue-datepicker-local>
                     <template >
-                    <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" type="inline" :disabled-date="checkout_disabledDate"></vue-datepicker-local>
+                    <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" type="inline" :disabled-date="checkout_disabledDate" :local="local"></vue-datepicker-local>
                     </template>
                     <div class="details">
                         <div class="total-price my-md">
                             <span class="mr-md">總價</span>
-                            <span>NT 3200</span>
+                            <!-- <span>NT 3200</span> -->
+                            <span>NT {{total_price}}</span>
                         </div>
                         <ul class="amenities">
-                            <li>- wifi：有</li>
+                            <!-- <li>- wifi：有</li>
                             <li>- 漂亮的視野：無</li>
                             <li>- 早餐：有</li>
                             <li>- 禁止吸煙：有</li>
@@ -74,7 +76,20 @@
                             <li>- 冰箱：有</li>
                             <li>- Mini Bar：無</li>
                             <li>- 沙發：無</li>
-                            <li>- Room Service：無</li>
+                            <li>- Room Service：無</li> -->
+
+                            <li>- wifi：<span v-if="roomInfo.amenities['Wi-Fi']">有</span><span v-else>無</span></li>
+                            <li>- 漂亮的視野：<span v-if="roomInfo.amenities['Great-View']">有</span><span v-else>無</span></li>
+                            <li>- 早餐：<span v-if="roomInfo.amenities['Breakfast']">有</span><span v-else>無</span></li>
+                            <li>- 禁止吸煙：<span v-if="!roomInfo.amenities['Smoke-Free']">有</span><span v-else>無</span></li>
+                            <li>- 電視：<span v-if="roomInfo.amenities['Television']">有</span><span v-else>無</span></li>
+                            <li>- 適合兒童：<span v-if="roomInfo.amenities['Child-Friendly']">有</span><span v-else>無</span></li>
+                            <li>- 空調：<span v-if="roomInfo.amenities['Air-Conditioner']">有</span><span v-else>無</span></li>
+                            <li>- 寵物攜帶：<span v-if="roomInfo.amenities['Pet-Friendly']">有</span><span v-else>無</span></li>
+                            <li>- 冰箱：<span v-if="roomInfo.amenities['Refrigerator']">有</span><span v-else>無</span></li>
+                            <li>- Mini Bar：<span v-if="roomInfo.amenities['Mini-Bar']">有</span><span v-else>無</span></li>
+                            <li>- 沙發：<span v-if="roomInfo.amenities['Sofa']">有</span><span v-else>無</span></li>
+                            <li>- Room Service：<span v-if="roomInfo.amenities['Room-Service']">有</span><span v-else>無</span></li>
                         </ul>
                     </div>
                 </div>
@@ -82,14 +97,17 @@
 
             <div class="d-flex mb-xl">
                 <div class="col-9 pr-lg d-flex flex-column justify-content-between">
-                    <div class="description">Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</div>
+                    <!-- <div class="description">Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</div> -->
+                    <div class="description">{{roomInfo.description}}</div>
                     <div class="check-time">
                         <div class="d-flex mb-lg">
                             <span class="title mr-md">checkIn 時間</span>
                             <div class="check-time-bar">
                                 <div class="progress-bar checkin">
-                                    <span>15:00</span>
-                                    <span>21:00</span>
+                                    <!-- <span>15:00</span> -->
+                                    <!-- <span>21:00</span> -->
+                                    <span>{{roomInfo.checkInAndOut.checkInEarly}}</span>
+                                    <span>{{roomInfo.checkInAndOut.checkInLate}}</span>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +115,8 @@
                             <span class="title mr-md">checkOut 時間</span>
                             <div class="check-time-bar">
                                 <div class="progress-bar checkout">
-                                    <span>10:00</span>
+                                    <!-- <span>10:00</span> -->
+                                    <span>{{roomInfo.checkInAndOut.checkOut}}</span>
                                 </div>
                             </div>
                         </div>
@@ -106,12 +125,19 @@
                 <div class="col-3 pl-lg">
                     <div class="descriptionShort">
                         <ul>
-                            <li>床型：單人床</li>
+                            <!-- <li>床型：單人床</li>
                             <li>房客人數限制： 1~1 人</li>
                             <li>衛浴數量： 1 間</li>
                             <li>房間大小： 18 平方公尺</li>
                             <li>假日(五~日)價格：1500</li>
-                            <li>平日(一~四)價格：1380</li>
+                            <li>平日(一~四)價格：1380</li> -->
+
+                            <li>床型：{{roomInfo.descriptionShort.Bed[0]}}</li>
+                            <li>房客人數限制： {{roomInfo.descriptionShort.GuestMin}}~{{roomInfo.descriptionShort.GuestMin}} 人</li>
+                            <li>衛浴數量： {{roomInfo.descriptionShort['Private-Bath']}} 間</li>
+                            <li>房間大小： {{roomInfo.descriptionShort.Footage}} 平方公尺</li>
+                            <li>假日(五~日)價格：{{roomInfo.normalDayPrice}}</li>
+                            <li>平日(一~四)價格：{{roomInfo.holidayPrice}}</li>
                         </ul>
                     </div>
                 </div>
@@ -133,10 +159,45 @@ export default {
         Footer,
         VueDatepickerLocal,
     },
+    computed: {
+        roomInfo () {
+            return this.$store.state.currentRoomInfo;
+        },
+        total_price () {
+            if (this.checkinTime >= this.checkoutTime) return 0;
+            
+            let total = 0;
+            let checkin = new Date(this.checkinTime);
+            let checkout = this.checkoutTime;
+            while (checkin < checkout) {
+                if ((checkin.getDay() != 0) && (checkin.getDay() != 5) && (checkin.getDay() != 6)) {
+                    total += this.roomInfo.normalDayPrice;
+                } else {
+                    total += this.roomInfo.holidayPrice;
+                }
+
+                checkin.setDate(checkin.getDate()+1);
+            }
+
+            return total;
+        }
+    },
     data () {
         return {
             checkinTime: new Date(),
             checkoutTime: new Date(),
+            local: {
+                dow: 0, // Sunday is the first day of the week
+                hourTip: 'Select Hour', // tip of select hour
+                minuteTip: 'Select Minute', // tip of select minute
+                secondTip: 'Select Second', // tip of select second
+                yearSuffix: ' 年', // suffix of head year
+                monthsHead: '01 月_02 月_03 月_04 月_05 月_06 月_07 月_08 月_09 月_10 月_11 月_12 月'.split('_'), // months of head
+                months: '01 月_02 月_03 月_04 月_05 月_06 月_07 月_08 月_09 月_10 月_11 月_12 月'.split('_'), // months of panel
+                weeks:  '日_一_二_三_四_五_六'.split('_'), // weeks
+                cancelTip: 'cancel',
+                submitTip: 'confirm'
+            },
         }
     },
     methods: {
@@ -161,17 +222,26 @@ export default {
             
             return  time < checkin_time;
         },
-        showTime() {
-            console.log('checkin: ', this.checkinTime);
-            console.log('checkout:', this.checkoutTime);
-        },
+        // showTime() {
+        //     console.log('checkin: ', this.checkinTime);
+        //     console.log('checkout:', this.checkoutTime);
+        // },
         getRoomInfo () {
             const id = this.$route.params.id;
             this.$store.dispatch('getSingleRoom', id);
+        },
+        setBookingDate () {
+            const bookingDate =  [
+                    this.checkinTime,
+                    this.checkoutTime
+            ];
+
+            this.$store.commit('setCurrentBooking', bookingDate);
         }
     },
     created () {
-        // this.getRoomInfo();
+        this.getRoomInfo();
+        this.checkoutTime.setDate(this.checkinTime.getDate()+1);
     }
 }
 </script>
@@ -223,10 +293,10 @@ export default {
     }
 }
 
-// .check-date>div, .room-amount, .adult-amount, .child-amount {
 .room-amount, .adult-amount, .child-amount {
     display: flex;
     align-items: center;
+    position: relative;
 
     span {
         padding: 4px 16px;
@@ -236,19 +306,36 @@ export default {
     div, select {
         padding: 4px 16px;
         border: 1px solid rgba(0,0,0,.3);
+        height: 34px;
         position: relative;
+        cursor: pointer;
     }
 
-    select:after {
-        position: absolute;
-        content: "";
-        top: 14px;
-        right: 10px;
-        width: 0;
-        height: 0;
-        border: 6px solid transparent;
-        border-color: #2D3047 transparent transparent transparent;
-    }
+    // &:before {
+    //     position: absolute;
+    //     z-index: 1;
+    //     content: "";
+    //     top: 10px;
+    //     right: 2px;
+    //     background: #fff;
+    //     width: 20px;
+    //     height: 20px;
+    //     display: block;
+    // }
+
+    // &:after {
+    //     position: absolute;
+    //     z-index: 2;
+    //     display: block;
+    //     content: "";
+    //     top: 14px;
+    //     right: 6px;
+    //     width: 0;
+    //     height: 0;
+    //     border: 9px solid transparent;
+    //     border-width: 9px 4px;
+    //     border-color: #2D3047 transparent transparent transparent;
+    // }
 }
 
 .check-date {

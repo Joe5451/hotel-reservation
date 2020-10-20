@@ -117,10 +117,26 @@ export default {
         Navbar,
         Footer,
     },
+    data () {
+        return {
+            checkinTime: '',
+            checkoutTime: '',
+        }
+    },
     methods: {
         pushToResult () {
             this.$router.push('/reservation/joe123/result');
+        },
+        getCurrentBooking () {
+            const currentBooking = [...this.$store.state.currentBooking];
+            this.checkinTime = currentBooking[0];
+            this.checkoutTime = currentBooking[currentBooking.length - 1];
+
+            console.log(this.$data);
         }
+    },
+    created () {
+        this.getCurrentBooking();
     }
 }
 </script>

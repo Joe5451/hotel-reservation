@@ -14,6 +14,12 @@ export default new Vuex.Store({
     isLoading: false,
     rooms: [],
     currentRoomInfo: {},
+    currentBooking: [],
+    reservationInfo: {
+      name: '',
+      tel: '',
+      date: [],
+    }
   },
   mutations: {
     LOADING (state, status) {
@@ -24,6 +30,10 @@ export default new Vuex.Store({
     },
     setCurrentRoomInfo (state, status) {
       state.currentRoomInfo = status;
+    },
+    setCurrentBooking (state, status) {
+      state.currentBooking = status;
+      console.log(state.currentBooking);
     }
   },
   actions: {
