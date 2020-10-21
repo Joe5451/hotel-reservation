@@ -6,7 +6,8 @@ Vue.use(Vuex)
 
 const headers = {
   'Authorization': 'Bearer tTbi8Es6qw4Mm4aIpVArVsDm13jEhBPscofeWsI2ah5T9XW8KK2BNheL2U7L',
-  'accept': 'application/json'
+  'accept': 'application/json',
+  'Content-Type': 'application/json',
 };
 
 export default new Vuex.Store({
@@ -15,6 +16,7 @@ export default new Vuex.Store({
     rooms: [],
     currentRoomInfo: {},
     currentBooking: [],
+    currentReservation: {},
     reservationInfo: {
       name: '',
       tel: '',
@@ -33,7 +35,10 @@ export default new Vuex.Store({
     },
     setCurrentBooking (state, status) {
       state.currentBooking = status;
-      console.log(state.currentBooking);
+      // console.log(state.currentBooking);
+    },
+    setCurrentReservation (state, status) {
+      state.currentReservation = status;
     }
   },
   actions: {
@@ -80,6 +85,35 @@ export default new Vuex.Store({
       })
       .finally(() => {
         context.commit('LOADING', false);
+      })
+    },
+    roomBooking (context, status) {
+      let obj = {
+        name: status.name,
+        tel: status.tel,
+        date: [...status.date],
+      };
+      console.log(obj);
+
+      axios({
+        method: 'post',
+        url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${status.roomId}`,
+        headers,
+        data: {
+          name: status.name,
+          tel: status.tel,
+          date: [...status.date],
+        }
+      })
+      .then(res => {
+        if (res.data.success) {
+          console.log('成功訂房');
+          console.log(res.data);
+        }
+      })
+      .catch(err => {
+        console.log('訂房失敗');
+        console.log(err.response.data);
       })
     }
   },

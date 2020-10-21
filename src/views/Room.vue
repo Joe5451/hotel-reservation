@@ -1,7 +1,7 @@
 <template>
     <div class="position-relative">
         <Navbar />
-        <main class="px-lg mt-lg pb-xl">
+        <main class="px-lg mt-lg pb-xl" v-if="roomInfo">
             <div class="room-title d-flex align-items-center mb-md">
                 <span class="mr-sm">HOT</span>
                 <!-- <h3>房間名稱：Single Room</h3> -->
@@ -226,12 +226,7 @@ export default {
             
             return  time < checkin_time;
         },
-        // showTime() {
-        //     console.log('checkin: ', this.checkinTime);
-        //     console.log('checkout:', this.checkoutTime);
-        // },
         getRoomInfo (id) {
-            // const id = this.$route.params.id;
             this.$store.dispatch('getSingleRoom', id);
         },
         setBookingDate () {
@@ -254,19 +249,19 @@ export default {
             let checkin = new Date(this.checkinTime);
             let checkout = new Date(this.checkoutTime);
 
-            //  && reservation_amount.success()
-
             if (checkin.setDate(checkin.getDate()+1) <= checkout) {
                 if (reservation_info.success()) {
                     this.$store.commit('setCurrentBooking', bookingDate);
+                    this.$store.commit('setCurrentReservation', reservation_info);
                     this.$router.push(`/reservation/${this.id}`);
                 } else {
+                    // console.log(checkin.getMilliseconds(), checkout.getMilliseconds());
                     alert('入住人數大於或小於房間限制');
                 }
             } else {
                 console.log('失敗');
                 console.log(checkin.getMilliseconds(), checkout.getMilliseconds());
-                alert('請確認正確訂房退房時間!');
+                alert('請選擇正確入房退房時間!');
             }
 
         },
@@ -274,6 +269,8 @@ export default {
     created () {
         this.id = this.$route.params.id;
         this.getRoomInfo(this.id);
+        this.checkinTime.setSeconds(0, 0);
+        this.checkoutTime.setSeconds(0, 0);
         this.checkoutTime.setDate(this.checkinTime.getDate()+1);
     }
 }
@@ -343,32 +340,6 @@ export default {
         position: relative;
         cursor: pointer;
     }
-
-    // &:before {
-    //     position: absolute;
-    //     z-index: 1;
-    //     content: "";
-    //     top: 10px;
-    //     right: 2px;
-    //     background: #fff;
-    //     width: 20px;
-    //     height: 20px;
-    //     display: block;
-    // }
-
-    // &:after {
-    //     position: absolute;
-    //     z-index: 2;
-    //     display: block;
-    //     content: "";
-    //     top: 14px;
-    //     right: 6px;
-    //     width: 0;
-    //     height: 0;
-    //     border: 9px solid transparent;
-    //     border-width: 9px 4px;
-    //     border-color: #2D3047 transparent transparent transparent;
-    // }
 }
 
 .check-date {

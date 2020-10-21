@@ -10,17 +10,21 @@
                 <div class="d-flex flex-column">
                     <div class="room-title d-flex align-items-center">
                         <span class="mr-sm">HOT</span>
-                        <h3>房間名稱：Single Room</h3>
+                        <!-- <h3>房間名稱：Single Room</h3> -->
+                        <h3>房間名稱：{{ roomInfo.name }}</h3>
                         <button>取消</button>
                     </div>
                     <div class="room-content position-relative">
                         <p>入住日期： 2019年2月12日~2019年2月14日</p>
-                        <p>入住人數： 1人</p>
+                        <!-- <p>入住人數： 1人</p> -->
+                        <p>入住人數： {{ curReservation.adult + curReservation.child }}人</p>
                         <p>不含早餐</p>
-                        <p>　　Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</p>
+                        <!-- <p>Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</p> -->
+                        <p>{{ roomInfo.description }}</p>
                         <div class="total-price my-md position-absolute">
                             <span class="mr-md">總價</span>
-                            <span>NT 3200</span>
+                            <!-- <span>NT 3200</span> -->
+                            <span>NT {{ total_price }}</span>
                         </div>
                     </div>
                 </div>
@@ -37,11 +41,13 @@
                 <div class="row">
                     <div class="form-group">
                         <label for="">入住日期</label>
-                        <div class='date-select checkin'>2020年10月11日</div>
+                        <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" :disabled-date="checkin_disabledDate" :local="local"></vue-datepicker-local>
+                        <!-- <div class='date-select checkin'>2020年10月11日</div> -->
                     </div>
                     <div class="form-group">
                         <label for="">退房日期</label>
-                        <div class='date-select checkout'>2020年10月11日</div>
+                        <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" :disabled-date="checkout_disabledDate" :local="local"></vue-datepicker-local>
+                        <!-- <div class='date-select checkout'>2020年10月11日</div> -->
                     </div>
                     <span class="welcome">歡迎您的蒞臨，誠摯為您服務2晚。</span>
                 </div>
@@ -49,18 +55,18 @@
                 <div class="row">
                     <div class="form-group">
                         <label for="">姓氏(英文)</label>
-                        <input type="text" placeholder="例：Weng">
+                        <input type="text" v-model="form.lastName" placeholder="例：Weng">
                     </div>
                     <div class="form-group">
                         <label for="">姓名(英文)</label>
-                        <input type="text" placeholder="例：Yuri-Han">
+                        <input type="text" v-model="form.firstName" placeholder="例：Yuri-Han">
                     </div>
                     <div class="form-group">
                         <label for="">稱謂</label>
-                        <select name="gender">
-                            <option selected disabled>請選擇</option>
-                            <option value="man">男士</option>
-                            <option value="woman">女士</option>
+                        <select name="gender" v-model="form.gender">
+                            <option selected disabled value="">請選擇</option>
+                            <option value="男士">男士</option>
+                            <option value="女士">女士</option>
                         </select>
                     </div>
                 </div>
@@ -68,14 +74,14 @@
                 <div class="row">
                     <div class="form-group w-50">
                         <label for="">聯絡電話</label>
-                        <input type="text" placeholder="例：0932-123-123">
+                        <input type="text" v-model="form.tel" placeholder="例：0932-123-123">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="form-group w-100">
                         <label for="">電子信箱</label>
-                        <input type="text" placeholder="小心不要打錯了，訂房確認函會寄到電子信箱喔">
+                        <input type="text" v-model="form.email" placeholder="小心不要打錯了，訂房確認函會寄到電子信箱喔">
                     </div>
                 </div>
 
@@ -99,7 +105,7 @@
                 </div>
 
                 <div class="row">
-                    <button class="submit-btn" @click.prevent="pushToResult">確認訂房</button>
+                    <button class="submit-btn" @click.prevent="test">確認訂房</button>
                 </div>
             </form>
         </main>
@@ -111,16 +117,79 @@
 <script>
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import VueDatepickerLocal from 'vue-datepicker-local';
 
 export default {
     components: {
         Navbar,
         Footer,
+        VueDatepickerLocal,
+    },
+    computed: {
+        roomInfo () {
+            return this.$store.state.currentRoomInfo;
+        },
+        curReservation () {
+            return this.$store.state.currentReservation;
+        },
+        total_price () {
+            if (this.checkinTime >= this.checkoutTime) return 0;
+            
+            let total = 0;
+            let checkin = new Date(this.checkinTime);
+            let checkout = new Date(this.checkoutTime);
+            while (checkin < checkout) {
+                if ((checkin.getDay() != 0) && (checkin.getDay() != 5) && (checkin.getDay() != 6)) {
+                    total += this.roomInfo.normalDayPrice;
+                } else {
+                    total += this.roomInfo.holidayPrice;
+                }
+
+                checkin.setDate(checkin.getDate()+1);
+            }
+
+            return total;
+        },
+        bookingDate () {
+            if (this.checkinTime >= this.checkoutTime) return [];
+            let date = [];
+            let checkin = new Date(this.checkinTime);
+            let checkout = new Date(this.checkoutTime);
+
+            while (checkin < checkout) {
+                date.push(this.transformDate(checkin));
+
+                checkin.setDate(checkin.getDate() + 1);
+            }
+
+            // date.push(this.transformDate(checkout));
+            return date;
+        },
     },
     data () {
         return {
+            id: '',
             checkinTime: '',
             checkoutTime: '',
+            local: {
+                dow: 0, // Sunday is the first day of the week
+                hourTip: 'Select Hour', // tip of select hour
+                minuteTip: 'Select Minute', // tip of select minute
+                secondTip: 'Select Second', // tip of select second
+                yearSuffix: ' 年', // suffix of head year
+                monthsHead: '01 月_02 月_03 月_04 月_05 月_06 月_07 月_08 月_09 月_10 月_11 月_12 月'.split('_'), // months of head
+                months: '01 月_02 月_03 月_04 月_05 月_06 月_07 月_08 月_09 月_10 月_11 月_12 月'.split('_'), // months of panel
+                weeks:  '日_一_二_三_四_五_六'.split('_'), // weeks
+                cancelTip: 'cancel',
+                submitTip: 'confirm'
+            },
+            form: {
+                lastName: 'Weng',
+                firstName: 'Xiao-Ming',
+                gender: '男士',
+                tel: '0912345678',
+                email: 'xiaoming123@email.com',
+            }
         }
     },
     methods: {
@@ -128,14 +197,77 @@ export default {
             this.$router.push('/reservation/joe123/result');
         },
         getCurrentBooking () {
-            const currentBooking = [...this.$store.state.currentBooking];
+            const currentBooking = this.$store.state.currentBooking;
             this.checkinTime = currentBooking[0];
             this.checkoutTime = currentBooking[currentBooking.length - 1];
 
             console.log(this.$data);
+        },
+        checkin_disabledDate(time) {            
+            const checkin = this.checkinTime;
+            const checkin_year = checkin.getFullYear();
+            const checkin_month = checkin.getMonth();
+            const checkin_date = checkin.getDate();
+            const checkin_time = new Date(checkin_year, checkin_month, checkin_date);
+
+            return time < checkin_time;
+        },
+        checkout_disabledDate(time) {
+            const checkin = this.checkinTime;
+            const checkin_year = checkin.getFullYear();
+            const checkin_month = checkin.getMonth();
+            const checkin_date = checkin.getDate();
+            const checkin_time = new Date(checkin_year, checkin_month, checkin_date + 1);
+            
+            return  time < checkin_time;
+        },
+        test () {
+            if (this.checkinTime >= this.checkoutTime) {
+                alert('入住日期不可等同或大於退房日期!');
+                return;
+            }
+
+            const reservation_data = {
+                roomId: this.id,
+                name: this.form.lastName + "-" + this.form.firstName,
+                tel: this.form.tel,
+                date: [...this.bookingDate],
+            }
+
+            console.log(reservation_data);
+
+            this.$store.dispatch('roomBooking', reservation_data);
+        },
+        // test () {
+        //     let date = [];
+        //     let checkin = new Date(this.checkinTime);
+        //     let checkout = new Date(this.checkoutTime);
+
+        //     while (checkin < checkout) {
+        //         date.push(this.transformDate(checkin));
+
+        //         checkin.setDate(checkin.getDate() + 1);
+        //     }
+
+        //     date.push(this.transformDate(checkout));
+        //     console.log(date);
+            
+        //     console.log(this.form);
+        // },
+        transformDate (time) {
+            let year = time.getFullYear();
+            let month = time.getMonth() + 1; 
+            let date = time.getDate();
+
+            if (month < 10) month = '0' + month;
+            if (date < 10) date = '0' + date;
+
+
+            return `${year}-${month}-${date}`;
         }
     },
     created () {
+        this.id = this.$route.params.id;
         this.getCurrentBooking();
     }
 }
