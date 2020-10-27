@@ -8,7 +8,7 @@
                     <div class="room-intro px-md">
                         <h3 class="title">客房介紹</h3>
                         <div class="d-flex flex-wrap justify-content-between">
-                            <div class="room-img" v-for="room in roomsInfo" :key="room.id">
+                            <div class="room-img" v-for="room in rooms" :key="room.id">
                                 <img :src="room.imageUrl" alt="room">
                                 <div class="more">
                                     <h3>{{ room.name }}</h3>
@@ -42,20 +42,17 @@ export default {
         Footer,
     },
     computed: {
-        roomsInfo () {
+        rooms () {
             return this.$store.state.rooms;
         }
     },
     methods: {
-        pushToRoom () {
-            this.$router.push('/room/123');
-        },
-        getRoomsInfo () {
-            this.$store.dispatch('getAllRoomsInfo');
+        getRooms () {
+            this.$store.dispatch('getRooms');
         }
     },
     created () {
-        this.getRoomsInfo();
+        this.getRooms();
     }
 }
 </script>

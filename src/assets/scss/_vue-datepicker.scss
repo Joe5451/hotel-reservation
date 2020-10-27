@@ -77,6 +77,10 @@
             color: #94E1C2 !important;
             background: rgba(0,0,0,0.07) !important;
         }
+
+        .calendar-years, .calendar-months {
+            background: #7EC8AA;
+        }
     }
 }
 
@@ -104,6 +108,10 @@
         a.calendar-date-disabled {
             color: #AAB3E5 !important;
             background: rgba(0,0,0,0.07) !important;
+        }
+
+        .calendar-years, .calendar-months {
+            background: #959CC4;
         }
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <div class="position-relative">
         <Navbar />
-        <main class="px-lg py-xl">
+        <main class="px-lg py-xl" v-if="room">
             <h2 class="reservation-title mb-md">訂單內容</h2>
             <div class="d-flex mb-md">
                 <div>
@@ -11,20 +11,21 @@
                     <div class="room-title d-flex align-items-center">
                         <span class="mr-sm">HOT</span>
                         <!-- <h3>房間名稱：Single Room</h3> -->
-                        <h3>房間名稱：{{ roomInfo.name }}</h3>
-                        <button>取消</button>
+                        <h3>房間名稱：{{ room.name }}</h3>
+                        <button @click="$router.push('/')">取消</button>
                     </div>
                     <div class="room-content position-relative">
                         <p>入住日期： 2019年2月12日~2019年2月14日</p>
                         <!-- <p>入住人數： 1人</p> -->
-                        <p>入住人數： {{ curReservation.adult + curReservation.child }}人</p>
-                        <p>不含早餐</p>
+                        <p>入住人數： {{ reservation.adultNum + reservation.childNum }}人</p>
+                        <p v-if="form.breakfast">含早餐</p>
+                        <p v-else>不含早餐</p>
                         <!-- <p>Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</p> -->
-                        <p>{{ roomInfo.description }}</p>
+                        <p>{{ room.description }}</p>
                         <div class="total-price my-md position-absolute">
                             <span class="mr-md">總價</span>
                             <!-- <span>NT 3200</span> -->
-                            <span>NT {{ total_price }}</span>
+                            <span>NT {{ totalPrice }}</span>
                         </div>
                     </div>
                 </div>
@@ -42,12 +43,10 @@
                     <div class="form-group">
                         <label for="">入住日期</label>
                         <vue-datepicker-local v-model="checkinTime" popupClass="checkin-datepicker" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" :disabled-date="checkin_disabledDate" :local="local"></vue-datepicker-local>
-                        <!-- <div class='date-select checkin'>2020年10月11日</div> -->
                     </div>
                     <div class="form-group">
                         <label for="">退房日期</label>
                         <vue-datepicker-local v-model="checkoutTime" popupClass="checkout-datepicker" format="YYYY 年 MM 月 DD 日" inputClass="datepicker-input" :disabled-date="checkout_disabledDate" :local="local"></vue-datepicker-local>
-                        <!-- <div class='date-select checkout'>2020年10月11日</div> -->
                     </div>
                     <span class="welcome">歡迎您的蒞臨，誠摯為您服務2晚。</span>
                 </div>
@@ -55,15 +54,15 @@
                 <div class="row">
                     <div class="form-group">
                         <label for="">姓氏(英文)</label>
-                        <input type="text" v-model="form.lastName" placeholder="例：Weng">
+                        <input type="text" required v-model="form.lastName" placeholder="例：Weng">
                     </div>
                     <div class="form-group">
                         <label for="">姓名(英文)</label>
-                        <input type="text" v-model="form.firstName" placeholder="例：Yuri-Han">
+                        <input type="text" required v-model="form.firstName" placeholder="例：Yuri-Han">
                     </div>
                     <div class="form-group">
                         <label for="">稱謂</label>
-                        <select name="gender" v-model="form.gender">
+                        <select name="gender" required v-model="form.gender">
                             <option selected disabled value="">請選擇</option>
                             <option value="男士">男士</option>
                             <option value="女士">女士</option>
@@ -74,38 +73,38 @@
                 <div class="row">
                     <div class="form-group w-50">
                         <label for="">聯絡電話</label>
-                        <input type="text" v-model="form.tel" placeholder="例：0932-123-123">
+                        <input type="text" required v-model="form.tel" placeholder="例：0932-123-123">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="form-group w-100">
                         <label for="">電子信箱</label>
-                        <input type="text" v-model="form.email" placeholder="小心不要打錯了，訂房確認函會寄到電子信箱喔">
+                        <input type="email" required v-model="form.email" placeholder="小心不要打錯了，訂房確認函會寄到電子信箱喔">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="form-group w-100">
                         <label for="">確認信箱</label>
-                        <input type="text" placeholder="再仔細確認一次吧">
+                        <input type="email" required v-model="confirmEmail" placeholder="再仔細確認一次吧">
                     </div>
                 </div>
 
                 <div class="extra-service">
                     <h3 class="title">額外加價服務</h3>
-                    <label>早餐  $320/1人
-                        <input type="checkbox" name="" id="">
+                    <label>早餐  ${{breakfastPay}}/1人
+                        <input type="checkbox" v-model="form.breakfast">
                         <span class="checkmark"></span>
                     </label>
-                    <label>租車旅遊  $2500/1日
-                        <input type="checkbox" name="" id="">
+                    <label>租車旅遊  ${{rentCarPay}}/1日
+                        <input type="checkbox" v-model="form.rentCar">
                         <span class="checkmark"></span>
                     </label>
                 </div>
 
                 <div class="row">
-                    <button class="submit-btn" @click.prevent="test">確認訂房</button>
+                    <button class="submit-btn" @click.prevent="setReservation">確認訂房</button>
                 </div>
             </form>
         </main>
@@ -126,51 +125,71 @@ export default {
         VueDatepickerLocal,
     },
     computed: {
-        roomInfo () {
-            return this.$store.state.currentRoomInfo;
+        room () {
+            return this.$store.state.curRoom;
         },
-        curReservation () {
-            return this.$store.state.currentReservation;
+        reservation () {
+            return this.$store.state.reservationData;
         },
-        total_price () {
+        checkEmail () {
+            if (this.form.email == this.confirmEmail) return true;
+            else return false;
+        },
+        // room () {
+        //     return this.$store.state.currentRoom;
+        // },
+        // curReservation () {
+        //     return this.$store.state.currentReservation;
+        // },
+        totalPrice () {
             if (this.checkinTime >= this.checkoutTime) return 0;
             
             let total = 0;
+            let dayNum = 0;
             let checkin = new Date(this.checkinTime);
             let checkout = new Date(this.checkoutTime);
             while (checkin < checkout) {
                 if ((checkin.getDay() != 0) && (checkin.getDay() != 5) && (checkin.getDay() != 6)) {
-                    total += this.roomInfo.normalDayPrice;
+                    total += this.room.normalDayPrice;
                 } else {
-                    total += this.roomInfo.holidayPrice;
+                    total += this.room.holidayPrice;
                 }
 
                 checkin.setDate(checkin.getDate()+1);
+                dayNum++;
+            }
+
+            if (this.form.breakfast) {
+                total += dayNum*(this.reservation.adultNum + this.reservation.childNum)*this.breakfastPay;
+            }
+
+            if (this.form.rentCar) {
+                total += dayNum*this.rentCarPay;
             }
 
             return total;
         },
         bookingDate () {
             if (this.checkinTime >= this.checkoutTime) return [];
+
             let date = [];
             let checkin = new Date(this.checkinTime);
             let checkout = new Date(this.checkoutTime);
 
-            while (checkin < checkout) {
+            while (checkin < checkout) { // checkout 為退房日期，不算入住期間
                 date.push(this.transformDate(checkin));
 
                 checkin.setDate(checkin.getDate() + 1);
             }
 
-            // date.push(this.transformDate(checkout));
             return date;
         },
     },
     data () {
         return {
             id: '',
-            checkinTime: '',
-            checkoutTime: '',
+            checkinTime: new Date(),
+            checkoutTime: new Date(),
             local: {
                 dow: 0, // Sunday is the first day of the week
                 hourTip: 'Select Hour', // tip of select hour
@@ -189,71 +208,41 @@ export default {
                 gender: '男士',
                 tel: '0912345678',
                 email: 'xiaoming123@email.com',
-            }
+                breakfast: false,
+                rentCar: false,
+            },
+            breakfastPay: 320,
+            rentCarPay: 2500,
+            confirmEmail: 'xiaoming123@email.com',
         }
     },
     methods: {
         pushToResult () {
             this.$router.push('/reservation/joe123/result');
         },
-        getCurrentBooking () {
-            const currentBooking = this.$store.state.currentBooking;
-            this.checkinTime = currentBooking[0];
-            this.checkoutTime = currentBooking[currentBooking.length - 1];
+        checkin_disabledDate(time) {
+            const now = new Date();
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setSeconds(0, 0);
 
-            console.log(this.$data);
-        },
-        checkin_disabledDate(time) {            
-            const checkin = this.checkinTime;
-            const checkin_year = checkin.getFullYear();
-            const checkin_month = checkin.getMonth();
-            const checkin_date = checkin.getDate();
-            const checkin_time = new Date(checkin_year, checkin_month, checkin_date);
-
-            return time < checkin_time;
+            return time < now;
         },
         checkout_disabledDate(time) {
-            const checkin = this.checkinTime;
-            const checkin_year = checkin.getFullYear();
-            const checkin_month = checkin.getMonth();
-            const checkin_date = checkin.getDate();
-            const checkin_time = new Date(checkin_year, checkin_month, checkin_date + 1);
-            
-            return  time < checkin_time;
+            const checkin = new Date(this.checkinTime);
+            checkin.setDate(checkin.getDate() + 1);
+
+            return time < checkin;
         },
-        test () {
-            if (this.checkinTime >= this.checkoutTime) {
-                alert('入住日期不可等同或大於退房日期!');
-                return;
-            }
+        getCheckDate () {
+            const checkDate = this.$store.state.checkDate;
+            this.checkinTime = checkDate.checkin?new Date(checkDate.checkin):new Date();
+            this.checkoutTime = checkDate.checkout?new Date(checkDate.checkout):new Date();
 
-            const reservation_data = {
-                roomId: this.id,
-                name: this.form.lastName + "-" + this.form.firstName,
-                tel: this.form.tel,
-                date: [...this.bookingDate],
-            }
-
-            console.log(reservation_data);
-
-            this.$store.dispatch('roomBooking', reservation_data);
+            this.checkinTime.setSeconds(0, 0);
+            this.checkoutTime.setSeconds(0, 0);
+            this.checkoutTime.setDate(this.checkinTime.getDate() + 1);
         },
-        // test () {
-        //     let date = [];
-        //     let checkin = new Date(this.checkinTime);
-        //     let checkout = new Date(this.checkoutTime);
-
-        //     while (checkin < checkout) {
-        //         date.push(this.transformDate(checkin));
-
-        //         checkin.setDate(checkin.getDate() + 1);
-        //     }
-
-        //     date.push(this.transformDate(checkout));
-        //     console.log(date);
-            
-        //     console.log(this.form);
-        // },
         transformDate (time) {
             let year = time.getFullYear();
             let month = time.getMonth() + 1; 
@@ -262,13 +251,69 @@ export default {
             if (month < 10) month = '0' + month;
             if (date < 10) date = '0' + date;
 
-
             return `${year}-${month}-${date}`;
-        }
+        },
+        setReservation () {
+            if (this.checkinTime >= this.checkoutTime) {
+                alert('入住日期不可等同或大於退房日期!');
+                return;
+            }
+
+            if (!this.checkEmail) {
+                alert('請再確認信箱是否相同!');
+                return;
+            }
+
+            const reservationData = {
+                roomId: this.id,
+                totalPrice: this.totalPrice,
+                date: [...this.bookingDate],
+                guestInfo: Object.assign({
+                    name: this.form.lastName + "-" + this.form.firstName
+                },this.form),
+            };
+
+            const checkDate = {
+                checkin: this.checkinTime,
+                checkout: this.checkoutTime,
+            };
+
+            this.$store.commit('setReservationData', reservationData);
+            this.$store.commit('setCheckDate', checkDate);
+            this.$store.dispatch('bookRoom', reservationData);
+            // this.$store.dispatch('roomBooking', reservationData);
+        },
+        // getCurrentBooking () {
+        //     const currentBooking = this.$store.state.currentBooking;
+        //     this.checkinTime = currentBooking[0];
+        //     this.checkoutTime = currentBooking[currentBooking.length - 1];
+
+        //     console.log(this.$data);
+        // },
+        // test () {
+        //     if (this.checkinTime >= this.checkoutTime) {
+        //         alert('入住日期不可等同或大於退房日期!');
+        //         return;
+        //     }
+
+        //     const reservation_data = Object.assign({
+        //         roomId: this.id,
+        //         name: this.form.lastName + "_" + this.form.firstName,
+        //         date: [...this.bookingDate]
+        //     }, this.form);
+
+        //     console.log(reservation_data);
+
+        //     this.$store.commit('setReservationInfo', reservation_data);
+        //     this.$store.dispatch('roomBooking', reservation_data);
+        // },
+        
     },
     created () {
         this.id = this.$route.params.id;
-        this.getCurrentBooking();
+        // this.getCurrentBooking();
+         this.$store.dispatch('getCurRoom', this.id);
+        this.getCheckDate();
     }
 }
 </script>

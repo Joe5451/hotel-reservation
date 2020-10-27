@@ -1,12 +1,12 @@
 <template>
     <div class="position-relative">
         <Navbar />
-        <main class="px-lg mt-lg pb-xl" v-if="roomInfo">
+        <main class="px-lg mt-lg pb-xl" v-if="room.name">
             <div class="room-title d-flex align-items-center mb-md">
                 <span class="mr-sm">HOT</span>
                 <!-- <h3>房間名稱：Single Room</h3> -->
-                <h3>房間名稱：{{roomInfo.name}}</h3>
-                <button class="submit-btn" @click="setBookingDate">預定</button>
+                <h3>房間名稱：{{room.name}}</h3>
+                <button class="submit-btn" @click="reserve">預定</button>
             </div>
 
             <div class="room-imgs-container d-flex mb-md">
@@ -33,21 +33,21 @@
                     </div>
                     <div class="room-amount">
                         <span>客房</span>
-                        <select v-model="room_amount" name="" id="">
+                        <select v-model="roomNum" name="" id="">
                             <option v-for="n in 10" :value="n" :key="n">{{n}}間</option>
                         </select>
                         <!-- <div>1間</div> -->
                     </div>
                     <div class="adult-amount">
                         <span>成人</span>
-                        <select v-model="adult_amount" name="" id="">
+                        <select v-model="adultNum" name="" id="">
                             <option v-for="n in 11" :value="n-1" :key="n-1">{{n-1}}人</option>
                         </select>
                         <!-- <div>1人</div> -->
                     </div>
                     <div class="child-amount">
                         <span>小孩</span>
-                        <select v-model="child_amount" name="" id="">
+                        <select v-model="childNum" name="" id="">
                             <option v-for="n in 11" :value="n-1" :key="n-1">{{n-1}}人</option>
                         </select>
                         <!-- <div>0人</div> -->
@@ -62,7 +62,7 @@
                         <div class="total-price my-md">
                             <span class="mr-md">總價</span>
                             <!-- <span>NT 3200</span> -->
-                            <span>NT {{total_price}}</span>
+                            <span>NT {{totalPrice}}</span>
                         </div>
                         <ul class="amenities">
                             <!-- <li>- wifi：有</li>
@@ -78,18 +78,18 @@
                             <li>- 沙發：無</li>
                             <li>- Room Service：無</li> -->
 
-                            <li>- wifi：<span v-if="roomInfo.amenities['Wi-Fi']">有</span><span v-else>無</span></li>
-                            <li>- 漂亮的視野：<span v-if="roomInfo.amenities['Great-View']">有</span><span v-else>無</span></li>
-                            <li>- 早餐：<span v-if="roomInfo.amenities['Breakfast']">有</span><span v-else>無</span></li>
-                            <li>- 禁止吸煙：<span v-if="!roomInfo.amenities['Smoke-Free']">有</span><span v-else>無</span></li>
-                            <li>- 電視：<span v-if="roomInfo.amenities['Television']">有</span><span v-else>無</span></li>
-                            <li>- 適合兒童：<span v-if="roomInfo.amenities['Child-Friendly']">有</span><span v-else>無</span></li>
-                            <li>- 空調：<span v-if="roomInfo.amenities['Air-Conditioner']">有</span><span v-else>無</span></li>
-                            <li>- 寵物攜帶：<span v-if="roomInfo.amenities['Pet-Friendly']">有</span><span v-else>無</span></li>
-                            <li>- 冰箱：<span v-if="roomInfo.amenities['Refrigerator']">有</span><span v-else>無</span></li>
-                            <li>- Mini Bar：<span v-if="roomInfo.amenities['Mini-Bar']">有</span><span v-else>無</span></li>
-                            <li>- 沙發：<span v-if="roomInfo.amenities['Sofa']">有</span><span v-else>無</span></li>
-                            <li>- Room Service：<span v-if="roomInfo.amenities['Room-Service']">有</span><span v-else>無</span></li>
+                            <li>- wifi：<span v-if="room.amenities['Wi-Fi']">有</span><span v-else>無</span></li>
+                            <li>- 漂亮的視野：<span v-if="room.amenities['Great-View']">有</span><span v-else>無</span></li>
+                            <li>- 早餐：<span v-if="room.amenities['Breakfast']">有</span><span v-else>無</span></li>
+                            <li>- 禁止吸煙：<span v-if="!room.amenities['Smoke-Free']">有</span><span v-else>無</span></li>
+                            <li>- 電視：<span v-if="room.amenities['Television']">有</span><span v-else>無</span></li>
+                            <li>- 適合兒童：<span v-if="room.amenities['Child-Friendly']">有</span><span v-else>無</span></li>
+                            <li>- 空調：<span v-if="room.amenities['Air-Conditioner']">有</span><span v-else>無</span></li>
+                            <li>- 寵物攜帶：<span v-if="room.amenities['Pet-Friendly']">有</span><span v-else>無</span></li>
+                            <li>- 冰箱：<span v-if="room.amenities['Refrigerator']">有</span><span v-else>無</span></li>
+                            <li>- Mini Bar：<span v-if="room.amenities['Mini-Bar']">有</span><span v-else>無</span></li>
+                            <li>- 沙發：<span v-if="room.amenities['Sofa']">有</span><span v-else>無</span></li>
+                            <li>- Room Service：<span v-if="room.amenities['Room-Service']">有</span><span v-else>無</span></li>
                         </ul>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
             <div class="d-flex mb-xl">
                 <div class="col-9 pr-lg d-flex flex-column justify-content-between">
                     <!-- <div class="description">Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</div> -->
-                    <div class="description">{{roomInfo.description}}</div>
+                    <div class="description">{{room.description}}</div>
                     <div class="check-time">
                         <div class="d-flex mb-lg">
                             <span class="title mr-md">checkIn 時間</span>
@@ -106,8 +106,8 @@
                                 <div class="progress-bar checkin">
                                     <!-- <span>15:00</span> -->
                                     <!-- <span>21:00</span> -->
-                                    <span>{{roomInfo.checkInAndOut.checkInEarly}}</span>
-                                    <span>{{roomInfo.checkInAndOut.checkInLate}}</span>
+                                    <span>{{room.checkInAndOut.checkInEarly}}</span>
+                                    <span>{{room.checkInAndOut.checkInLate}}</span>
                                 </div>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                             <div class="check-time-bar">
                                 <div class="progress-bar checkout">
                                     <!-- <span>10:00</span> -->
-                                    <span>{{roomInfo.checkInAndOut.checkOut}}</span>
+                                    <span>{{room.checkInAndOut.checkOut}}</span>
                                 </div>
                             </div>
                         </div>
@@ -132,12 +132,12 @@
                             <li>假日(五~日)價格：1500</li>
                             <li>平日(一~四)價格：1380</li> -->
 
-                            <li>床型：{{roomInfo.descriptionShort.Bed[0]}}</li>
-                            <li>房客人數限制： {{roomInfo.descriptionShort.GuestMin}}~{{roomInfo.descriptionShort.GuestMax}} 人</li>
-                            <li>衛浴數量： {{roomInfo.descriptionShort['Private-Bath']}} 間</li>
-                            <li>房間大小： {{roomInfo.descriptionShort.Footage}} 平方公尺</li>
-                            <li>假日(五~日)價格：{{roomInfo.normalDayPrice}}</li>
-                            <li>平日(一~四)價格：{{roomInfo.holidayPrice}}</li>
+                            <li>床型：{{room.descriptionShort.Bed[0]}}</li>
+                            <li>房客人數限制： {{room.descriptionShort.GuestMin}}~{{room.descriptionShort.GuestMax}} 人</li>
+                            <li>衛浴數量： {{room.descriptionShort['Private-Bath']}} 間</li>
+                            <li>房間大小： {{room.descriptionShort.Footage}} 平方公尺</li>
+                            <li>假日(五~日)價格：{{room.normalDayPrice}}</li>
+                            <li>平日(一~四)價格：{{room.holidayPrice}}</li>
                         </ul>
                     </div>
                 </div>
@@ -160,20 +160,31 @@ export default {
         VueDatepickerLocal,
     },
     computed: {
-        roomInfo () {
-            return this.$store.state.currentRoomInfo;
+        room () {
+            return this.$store.state.curRoom;
         },
-        total_price () {
+        peopleLimit () {
+            const GuestMax = this.room.descriptionShort.GuestMax;
+            const GuestMin = this.room.descriptionShort.GuestMin;
+            const MaxNum = GuestMax * this.roomNum;
+            const MinNum = GuestMin * this.roomNum;
+            const peopleNum = this.adultNum + this.childNum;
+            
+            if (MaxNum < peopleNum || peopleNum < MinNum) return false;
+            else return true;
+        },
+        totalPrice () {
             if (this.checkinTime >= this.checkoutTime) return 0;
             
             let total = 0;
             let checkin = new Date(this.checkinTime);
             let checkout = new Date(this.checkoutTime);
+
             while (checkin < checkout) {
                 if ((checkin.getDay() != 0) && (checkin.getDay() != 5) && (checkin.getDay() != 6)) {
-                    total += this.roomInfo.normalDayPrice;
+                    total += this.room.normalDayPrice;
                 } else {
-                    total += this.roomInfo.holidayPrice;
+                    total += this.room.holidayPrice;
                 }
 
                 checkin.setDate(checkin.getDate()+1);
@@ -181,6 +192,27 @@ export default {
 
             return total;
         }
+        // roomInfo () {
+        //     return this.$store.state.currentRoomInfo;
+        // },
+        // total_price () {
+        //     if (this.checkinTime >= this.checkoutTime) return 0;
+            
+        //     let total = 0;
+        //     let checkin = new Date(this.checkinTime);
+        //     let checkout = new Date(this.checkoutTime);
+        //     while (checkin < checkout) {
+        //         if ((checkin.getDay() != 0) && (checkin.getDay() != 5) && (checkin.getDay() != 6)) {
+        //             total += this.roomInfo.normalDayPrice;
+        //         } else {
+        //             total += this.roomInfo.holidayPrice;
+        //         }
+
+        //         checkin.setDate(checkin.getDate()+1);
+        //     }
+
+        //     return total;
+        // }
     },
     data () {
         return {
@@ -199,79 +231,111 @@ export default {
                 cancelTip: 'cancel',
                 submitTip: 'confirm'
             },
-            room_amount: 1,
-            adult_amount: 0,
-            child_amount: 0,
+            roomNum: 1,
+            adultNum: 0,
+            childNum: 0,
         }
     },
     methods: {
-        pushToReservation () {
-            this.$router.push('/reservation/joe123');
-        },
         checkin_disabledDate(time) {            
             const now = new Date();
-            const now_year = now.getFullYear();
-            const now_month = now.getMonth();
-            const now_date = now.getDate();
-            const now_time = new Date(now_year, now_month, now_date);
+            now.setHours(0);
+            now.setMinutes(0);
+            now.setSeconds(0, 0);
 
-            return time < now_time;
+            return time < now;
         },
         checkout_disabledDate(time) {
-            const checkin = this.checkinTime;
-            const checkin_year = checkin.getFullYear();
-            const checkin_month = checkin.getMonth();
-            const checkin_date = checkin.getDate();
-            const checkin_time = new Date(checkin_year, checkin_month, checkin_date + 1);
+            const checkin = new Date(this.checkinTime);
+            checkin.setDate(checkin.getDate() + 1);            
             
-            return  time < checkin_time;
+            return  time < checkin;
         },
-        getRoomInfo (id) {
-            this.$store.dispatch('getSingleRoom', id);
+        getCurRoom () {
+            this.$store.dispatch('getCurRoom', this.id);
         },
-        setBookingDate () {
-            const GuestMax = this.roomInfo.descriptionShort.GuestMax;
-            const bookingDate =  [
-                    this.checkinTime,
-                    this.checkoutTime
-            ];
-            const reservation_info = {
-                room: this.room_amount,
-                adult: this.adult_amount,
-                child: this.child_amount,
-                max: this.room_amount * GuestMax,
-                total: this.total_price,
-                success: function() {
-                    if (this.max < this.adult + this.child || this.adult + this.child <= 0) return false;
-                    else return true;
-                },
+        reserve () {
+            const GuestMax = this.room.descriptionShort.GuestMax;
+            const GuestMin = this.room.descriptionShort.GuestMin;
+            const checkDate = {
+                checkin: this.checkinTime,
+                checkout: this.checkoutTime,
             };
-            let checkin = new Date(this.checkinTime);
-            let checkout = new Date(this.checkoutTime);
+            const reservationData = {
+                roomNum: this.roomNum,
+                adultNum: this.adultNum,
+                childNum: this.childNum,
+                totalPrice: this.totalPrice,
+            };
+            const checkin = new Date(this.checkinTime);
+            const checkout = new Date(this.checkoutTime);
 
-            if (checkin.setDate(checkin.getDate()+1) <= checkout) {
-                if (reservation_info.success()) {
-                    this.$store.commit('setCurrentBooking', bookingDate);
-                    this.$store.commit('setCurrentReservation', reservation_info);
+            if (checkin < checkout) {
+                if (this.peopleLimit) {
+                    this.$store.commit('setCheckDate', checkDate);
+                    this.$store.commit('setReservationData', reservationData);
                     this.$router.push(`/reservation/${this.id}`);
                 } else {
-                    // console.log(checkin.getMilliseconds(), checkout.getMilliseconds());
                     alert('入住人數大於或小於房間限制');
                 }
             } else {
-                console.log('失敗');
-                console.log(checkin.getMilliseconds(), checkout.getMilliseconds());
-                alert('請選擇正確入房退房時間!');
+                console.log('checkin: ', checkin);
+                console.log('checkout: ', checkout);
+                alert('入住日期不可等同或大於退房日期!');
             }
-
         },
+        // getRoomInfo (id) {
+        //     this.$store.dispatch('getSingleRoom', id);
+        // },
+        // setBookingDate () {
+        //     const GuestMax = this.roomInfo.descriptionShort.GuestMax;
+        //     const GuestMin = this.roomInfo.descriptionShort.GuestMin;
+        //     const bookingDate =  [
+        //             this.checkinTime,
+        //             this.checkoutTime
+        //     ];
+        //     const reservation_info = {
+        //         room: this.roomNum,
+        //         adult: this.adultNum,
+        //         child: this.childNum,
+        //         people: this.adultNum + this.childNum,
+        //         max: this.roomNum * GuestMax,
+        //         min: this.roomNum * GuestMin,
+        //         total: this.total_price,
+        //         success: function() {
+        //             if (this.max < this.people || this.people < this.min) return false;
+        //             else return true;
+        //         },
+        //     };
+        //     let checkin = new Date(this.checkinTime);
+        //     let checkout = new Date(this.checkoutTime);
+
+        //     if (checkin.setDate(checkin.getDate()+1) <= checkout) {
+        //         if (reservation_info.success()) {
+        //             this.$store.commit('setCurrentBooking', bookingDate);
+        //             this.$store.commit('setCurrentReservation', reservation_info);
+        //             this.$router.push(`/reservation/${this.id}`);
+        //         } else {
+        //             alert('入住人數大於或小於房間限制');
+        //         }
+        //     } else {
+        //         alert('入住日期不可等同或大於退房日期!');
+        //     }
+
+        // },
     },
     created () {
+        // this.id = this.$route.params.id;
+        // this.getRoomInfo(this.id);
+        // this.checkinTime.setSeconds(0, 0);
+        // this.checkoutTime.setSeconds(0, 0);
+        // this.checkoutTime.setDate(this.checkinTime.getDate() + 1);
+
         this.id = this.$route.params.id;
-        this.getRoomInfo(this.id);
+        this.getCurRoom();
         this.checkinTime.setSeconds(0, 0);
         this.checkoutTime.setSeconds(0, 0);
-        this.checkoutTime.setDate(this.checkinTime.getDate()+1);
+        this.checkoutTime.setDate(this.checkinTime.getDate() + 1);
     }
 }
 </script>

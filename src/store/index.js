@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import router from '../router'
 
 Vue.use(Vuex)
 
@@ -13,33 +14,88 @@ const headers = {
 export default new Vuex.Store({
   state: {
     isLoading: false,
+    // rooms: [],
+    // currentRoomInfo: {},
+    // currentBooking: [],
+    // currentReservation: {},
+    // reservationInfo: {},
+    // reservationResult: {
+    //   success: false,
+    //   data: {},
+    // },
     rooms: [],
-    currentRoomInfo: {},
-    currentBooking: [],
-    currentReservation: {},
-    reservationInfo: {
-      name: '',
-      tel: '',
+    curRoom: {},
+    checkDate: {
+      checkin: '',
+      checkout: '',
+    },
+    reservationData: {
+      roomId: '',
+      roomNum: 1,
+      adultNum: 0,
+      childNum: 0,
+      totalPrice: 0,
       date: [],
+      guestInfo: {
+        firstName: '',
+        lastName: '',
+        name: '',
+        gender: '',
+        tel: '',
+        email: '',
+        breakfast: false,
+        rentCar: false,
+      },    
+    },
+    reservationResult: {
+      success: false,
+      data: {},
     }
   },
   mutations: {
     LOADING (state, status) {
       state.isLoading = status;
     },
-    setRoomsInfo (state, status) {
+    setRooms (state, status) {
       state.rooms = status;
     },
-    setCurrentRoomInfo (state, status) {
-      state.currentRoomInfo = status;
+    setCurRoom (state, status) {
+      state.curRoom = status;
     },
-    setCurrentBooking (state, status) {
-      state.currentBooking = status;
-      // console.log(state.currentBooking);
+    setCheckDate (state, status) {
+      state.checkDate = status;
+      console.log('checkDate: ', state.checkDate);
     },
-    setCurrentReservation (state, status) {
-      state.currentReservation = status;
+    setReservationData (state, status) {
+      state.reservationData = Object.assign(state.reservationData, status);
+      console.log('reservationData: ',state.reservationData);
+    },
+    setReservationResult (state, status) {
+      state.reservationResult = status;
+
+      // if (status.success) {
+      //   let room = status.data.room[0];
+      //   router.push(`/reservation/${room.id}/result`);
+      // }
+      router.push(`/reservation/${state.reservationData.roomId}/result`);
     }
+    // setCurrentRoomInfo (state, status) {
+    //   state.currentRoomInfo = status;
+    // },
+    // setCurrentBooking (state, status) {
+    //   state.currentBooking = status;
+    // },
+    // setCurrentReservation (state, status) {
+    //   state.currentReservation = status;
+    // },
+    // setReservationInfo (state, status) {
+    //   state.reservationInfo = status;
+    // },
+    // setReservationResult (state, status) {
+    //   state.reservationResult = status;
+    //   console.log(state.reservationResult);
+    //   router.push('/reservation/joe123/result');
+    // }
   },
   actions: {
     updateLoading (context, status) {
@@ -51,7 +107,7 @@ export default new Vuex.Store({
         context.commit('LOADING', status);
       }
     },
-    getAllRoomsInfo (context, status) {
+    getRooms (context, status) {
       context.commit('LOADING', true);
 
       axios({
@@ -59,7 +115,7 @@ export default new Vuex.Store({
         url: 'https://challenge.thef2e.com/api/thef2e2019/stage6/rooms',
         headers
       }).then(res => {
-        context.commit('setRoomsInfo', res.data.items);
+        context.commit('setRooms', res.data.items);
       })
       .catch(err => {
         console.error(err);
@@ -68,17 +124,15 @@ export default new Vuex.Store({
         context.dispatch('updateLoading', false);
       })
     },
-    getSingleRoom (context, status) {
+    getCurRoom (context, id) {
       context.commit('LOADING', true);
-      const id = status;
 
       axios({
         methods: 'get',
         url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${id}`,
         headers
       }).then(res => {
-        console.log(res.data.room[0]);
-        context.commit('setCurrentRoomInfo', res.data.room[0]);
+        context.commit('setCurRoom', res.data.room[0]);
       })
       .catch(err => {
         console.error(err);
@@ -87,36 +141,99 @@ export default new Vuex.Store({
         context.commit('LOADING', false);
       })
     },
-    roomBooking (context, status) {
-      let obj = {
-        name: status.name,
-        tel: status.tel,
-        date: [...status.date],
-      };
-      console.log(obj);
+    bookRoom (context, data) {
+      const guestInfo = data.guestInfo;
 
       axios({
         method: 'post',
-        url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${status.roomId}`,
+        url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${data.roomId}`,
         headers,
         data: {
-          name: status.name,
-          tel: status.tel,
-          date: [...status.date],
+          name: guestInfo.name,
+          tel: guestInfo.tel,
+          date: data.date,
         }
       })
       .then(res => {
         if (res.data.success) {
-          console.log('成功訂房');
-          console.log(res.data);
+          let result = {
+            success: true,
+            data: res.data,
+          };
+          console.log('booking result: ', result);
+          context.commit('setReservationResult', result);
         }
       })
       .catch(err => {
-        console.log('訂房失敗');
-        console.log(err.response.data);
+        let result = {
+          success: false,
+          data: err.response.data,
+        };
+        console.log('booking result: ', result);
+
+        let message = result.data.message;
+        if (message == '您所提供的訂房時間(date)不得大於 90 天。') result.data.message = '訂房時間不得大於 90 天';
+        else if (message == '您所提供的訂房時間(date)不得小於或等於今天。') result.data.message = '訂房時間不得小於或等於今天';
+        else if (message == '您所提供的訂房時間(date)已有訂房。') result.data.message = '您所提供的訂房時間已有訂房';
+
+        console.log(result);
+
+        context.commit('setReservationResult', result);
       })
-    }
+    },
+
+    // getSingleRoom (context, status) {
+    //   context.commit('LOADING', true);
+    //   const id = status;
+
+    //   axios({
+    //     methods: 'get',
+    //     url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${id}`,
+    //     headers
+    //   }).then(res => {
+    //     context.commit('setCurrentRoomInfo', res.data.room[0]);
+    //   })
+    //   .catch(err => {
+    //     console.error(err);
+    //   })
+    //   .finally(() => {
+    //     context.commit('LOADING', false);
+    //   })
+    // },
+    // roomBooking (context, status) {
+    //   let obj = {
+    //     name: status.name,
+    //     tel: status.tel,
+    //     date: [...status.date],
+    //   };
+    //   console.log(obj);
+
+    //   axios({
+    //     method: 'post',
+    //     url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${status.roomId}`,
+    //     headers,
+    //     data: {
+    //       name: status.name,
+    //       tel: status.tel,
+    //       date: [...status.date],
+    //     }
+    //   })
+    //   .then(res => {
+    //     if (res.data.success) {
+    //       let status = {
+    //         success: true,
+    //         data: res.data,
+    //       }
+    //       context.commit('setReservationResult', status);
+    //     }
+    //   })
+    //   .catch(err => {
+    //     let status = {
+    //       success: false,
+    //       data: err.response.data,
+    //     }
+    //     context.commit('setReservationResult', status);
+    //   })
+    // }
   },
-  // modules: {
-  // }
 })
