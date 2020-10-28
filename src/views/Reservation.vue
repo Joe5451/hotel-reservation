@@ -1,33 +1,27 @@
-<template>
-    <!-- <i class="fas fa-calendar-alt"></i>
-    <i class="fas fa-user"></i>
-    <i class="fas fa-utensils"></i> -->
+<template>  
     <div class="position-relative">
         <Navbar />
-        <main class="px-lg py-xl" v-if="room">
+        <main class="px-lg py-xl" v-if="room.name">
             <h2 class="reservation-title mb-md">訂單內容</h2>
             <div class="d-flex mb-md">
-                <div>
-                    <img src="../assets/img/room2.png" alt="room picture" width="450px" style="object-fit: cover; height:100%">
+                <div class="room-image">
+                    <!-- <img src="../assets/img/room2.png" alt="room picture" width="450px" style="object-fit: cover; height:100%"> -->
+                    <img :src="room.imageUrl[0]" alt="room picture" width="450px" height="350px" style="object-fit: cover">
                 </div>
                 <div class="d-flex flex-column">
                     <div class="room-title d-flex align-items-center">
                         <span class="mr-sm">HOT</span>
-                        <!-- <h3>房間名稱：Single Room</h3> -->
                         <h3>房間名稱：{{ room.name }}</h3>
                         <button @click="$router.push('/')">取消</button>
                     </div>
                     <div class="room-content position-relative">
-                        <p>入住日期： 2019年2月12日~2019年2月14日</p>
-                        <!-- <p>入住人數： 1人</p> -->
-                        <p>入住人數： {{ reservation.adultNum + reservation.childNum }}人</p>
-                        <p v-if="form.breakfast">含早餐</p>
-                        <p v-else>不含早餐</p>
-                        <!-- <p>Single Room is only reserved for one guest. There is a bedroom with a single size bed and a private bathroom. Everything you need prepared for you: sheets and blankets, towels, soap and shampoo, hairdryer are provided. In the room there is AC and of course WiFi.</p> -->
-                        <p>{{ room.description }}</p>
+                        <p class="livingDate"><i class="fas fa-calendar-alt"></i> 入住日期： {{ transformDate(checkinTime) }}~{{ transformDate(checkoutTime) }}</p>
+                        <p class="peopleNum"><i class="fas fa-user"></i> 入住人數： {{ reservation.adultNum + reservation.childNum }}人</p>
+                        <p v-if="form.breakfast" class="breakfast"><i class="fas fa-utensils"></i> 含早餐</p>
+                        <p v-else class="breakfast"><i class="fas fa-utensils"></i> 不含早餐</p>
+                        <p class="description">{{ room.description }}</p>
                         <div class="total-price my-md position-absolute">
                             <span class="mr-md">總價</span>
-                            <!-- <span>NT 3200</span> -->
                             <span>NT {{ totalPrice }}</span>
                         </div>
                     </div>
@@ -138,12 +132,6 @@ export default {
             if (this.form.email == this.confirmEmail) return true;
             else return false;
         },
-        // room () {
-        //     return this.$store.state.currentRoom;
-        // },
-        // curReservation () {
-        //     return this.$store.state.currentReservation;
-        // },
         totalPrice () {
             if (this.checkinTime >= this.checkoutTime) return 0;
             
@@ -244,7 +232,6 @@ export default {
 
             this.checkinTime.setSeconds(0, 0);
             this.checkoutTime.setSeconds(0, 0);
-            this.checkoutTime.setDate(this.checkinTime.getDate() + 1);
         },
         transformDate (time) {
             let year = time.getFullYear();
@@ -284,37 +271,10 @@ export default {
             this.$store.commit('setReservationData', reservationData);
             this.$store.commit('setCheckDate', checkDate);
             this.$store.dispatch('bookRoom', reservationData);
-            // this.$store.dispatch('roomBooking', reservationData);
         },
-        // getCurrentBooking () {
-        //     const currentBooking = this.$store.state.currentBooking;
-        //     this.checkinTime = currentBooking[0];
-        //     this.checkoutTime = currentBooking[currentBooking.length - 1];
-
-        //     console.log(this.$data);
-        // },
-        // test () {
-        //     if (this.checkinTime >= this.checkoutTime) {
-        //         alert('入住日期不可等同或大於退房日期!');
-        //         return;
-        //     }
-
-        //     const reservation_data = Object.assign({
-        //         roomId: this.id,
-        //         name: this.form.lastName + "_" + this.form.firstName,
-        //         date: [...this.bookingDate]
-        //     }, this.form);
-
-        //     console.log(reservation_data);
-
-        //     this.$store.commit('setReservationInfo', reservation_data);
-        //     this.$store.dispatch('roomBooking', reservation_data);
-        // },
-        
     },
     created () {
         this.id = this.$route.params.id;
-        // this.getCurrentBooking();
          this.$store.dispatch('getCurRoom', this.id);
         this.getCheckDate();
     }
@@ -348,20 +308,33 @@ export default {
     color: #fff;
 }
 
+.room-image {
+    border: 1px solid rgba(0,0,0,.5);
+}
+
 .room-content {
     padding: 30px 24px;
     border: 1px solid rgba(0,0,0,.5);
     border-top: 0;
+    border-left: 0;
 
     p {
         margin-bottom: 24px;
         color: #2D3047;
 
-        &:nth-child(3) {
+        &.livingDate, &.peopleNum, &.breakfast {
+            i {
+                color: #2D3047;
+                padding-right: 5px;
+                font-size: 17px;
+            }
+        }
+
+        &.breakfast {
             color: #F73131;
         }
 
-        &:nth-child(4) {
+        &.description {
             margin-bottom: 0;
             color: #8F8F8F;
             line-height: 3;

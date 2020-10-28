@@ -14,15 +14,6 @@ const headers = {
 export default new Vuex.Store({
   state: {
     isLoading: false,
-    // rooms: [],
-    // currentRoomInfo: {},
-    // currentBooking: [],
-    // currentReservation: {},
-    // reservationInfo: {},
-    // reservationResult: {
-    //   success: false,
-    //   data: {},
-    // },
     rooms: [],
     curRoom: {},
     checkDate: {
@@ -78,24 +69,7 @@ export default new Vuex.Store({
       //   router.push(`/reservation/${room.id}/result`);
       // }
       router.push(`/reservation/${state.reservationData.roomId}/result`);
-    }
-    // setCurrentRoomInfo (state, status) {
-    //   state.currentRoomInfo = status;
-    // },
-    // setCurrentBooking (state, status) {
-    //   state.currentBooking = status;
-    // },
-    // setCurrentReservation (state, status) {
-    //   state.currentReservation = status;
-    // },
-    // setReservationInfo (state, status) {
-    //   state.reservationInfo = status;
-    // },
-    // setReservationResult (state, status) {
-    //   state.reservationResult = status;
-    //   console.log(state.reservationResult);
-    //   router.push('/reservation/joe123/result');
-    // }
+    },
   },
   actions: {
     updateLoading (context, status) {
@@ -132,6 +106,7 @@ export default new Vuex.Store({
         url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${id}`,
         headers
       }).then(res => {
+        console.log('current room: ', res.data.room[0]);
         context.commit('setCurRoom', res.data.room[0]);
       })
       .catch(err => {
@@ -181,59 +156,5 @@ export default new Vuex.Store({
         context.commit('setReservationResult', result);
       })
     },
-
-    // getSingleRoom (context, status) {
-    //   context.commit('LOADING', true);
-    //   const id = status;
-
-    //   axios({
-    //     methods: 'get',
-    //     url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${id}`,
-    //     headers
-    //   }).then(res => {
-    //     context.commit('setCurrentRoomInfo', res.data.room[0]);
-    //   })
-    //   .catch(err => {
-    //     console.error(err);
-    //   })
-    //   .finally(() => {
-    //     context.commit('LOADING', false);
-    //   })
-    // },
-    // roomBooking (context, status) {
-    //   let obj = {
-    //     name: status.name,
-    //     tel: status.tel,
-    //     date: [...status.date],
-    //   };
-    //   console.log(obj);
-
-    //   axios({
-    //     method: 'post',
-    //     url: `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${status.roomId}`,
-    //     headers,
-    //     data: {
-    //       name: status.name,
-    //       tel: status.tel,
-    //       date: [...status.date],
-    //     }
-    //   })
-    //   .then(res => {
-    //     if (res.data.success) {
-    //       let status = {
-    //         success: true,
-    //         data: res.data,
-    //       }
-    //       context.commit('setReservationResult', status);
-    //     }
-    //   })
-    //   .catch(err => {
-    //     let status = {
-    //       success: false,
-    //       data: err.response.data,
-    //     }
-    //     context.commit('setReservationResult', status);
-    //   })
-    // }
   },
 })

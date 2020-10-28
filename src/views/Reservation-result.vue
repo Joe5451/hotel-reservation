@@ -1,22 +1,20 @@
 <template>
     <div class="position-relative">
         <Navbar />
-        <main class="px-lg py-xl">
+        <main class="px-lg py-xl" v-if="room.name">
             <div class="d-flex">
                 <div class="room-info w-40">
                     <div class="result success" v-if="result.success">完成訂單</div>
                     <div class="result fail" v-else>訂單失敗</div>
-                    <img src="../assets/img/room2.png" alt="room picture">
+                    <!-- <img src="../assets/img/room2.png" alt="room picture"> -->
+                    <img :src="room.imageUrl[0]" width="392px" height="301px" alt="room picture">
                     <div class="room-content">
                         <h3>Single Room</h3>
-                        <!-- <p>入住日期： 2019年2月12日~2019年2月14日</p> -->
                         <p>入住日期： {{transformDate(reservation.date[0])}}~{{transformDate(reservation.date[reservation.date.length - 1])}}</p>
-                        <!-- <p>入住人數： 1人</p> -->
                         <p>入住人數： {{reservation.adultNum + reservation.childNum}}人</p>
                     </div>
                     <div class="total-price my-md position-absolute">
                             <span class="mr-md">總價</span>
-                            <!-- <span>NT 3200</span> -->
                             <span>NT {{reservation.totalPrice}}</span>
                     </div>
                 </div>
@@ -64,16 +62,10 @@ export default {
         room () {
             return this.$store.state.curRoom;
         }
-        // curReservation () {
-        //     return this.$store.state.currentReservation;
-        // },
-        // reservationInfo() {
-        //     return this.$store.state.reservationInfo;
-        // }
     },
     data () {
         return {
-
+            id: '',
         }
     },
     methods: {
@@ -82,11 +74,14 @@ export default {
                 let array = time.split('-');
                 return array[0] + '年' + array[1] + '月' + array[2] + '日';
             } else return '';
-
-        }
+        },
+        getCurRoom () {
+            this.$store.dispatch('getCurRoom', this.id);
+        },
     },
-    mounted () {
-
+    created () {
+        this.id = this.$route.params.id;
+        this.getCurRoom();
     }
 }
 </script>
@@ -115,7 +110,7 @@ export default {
     }
 
     img {
-        width: 100%;
+        object-fit: cover;
         margin-bottom: 16px;
     }
 
