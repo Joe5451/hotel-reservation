@@ -239,7 +239,7 @@ export default {
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            border-radius: 0 0 2.5px 2.5px;
+            border-radius: 0 0 2.5px 2.5px / 0 0 4px 4px;
         }
     }
 }

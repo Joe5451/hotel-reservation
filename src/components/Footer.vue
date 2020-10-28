@@ -34,6 +34,7 @@
 
     .language-select {
         margin-left: auto;
+        position: relative;
 
         li {
             padding: 8px 16px;
@@ -45,6 +46,40 @@
 
             &.active {
                 color: #fff;
+            }
+        }
+
+        &:before, &:after {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            font-weight: bold;
+        }
+
+        &:before {
+            content: '';                    
+            left: 40px;
+            transform: translate(0, -5px);
+            border-width: 15px 10px 0;
+            border-style: solid;
+            border-color: rgba(149, 156, 196, 0.8) transparent transparent;
+        }
+        
+        &:after {
+            content: '目前僅開放繁體中文';
+            left: 50px;
+            transform: translate(-50%, -20px);
+            background: rgba(149, 156, 196, 0.8);
+            border-radius: 5px;
+            color: #2D3047;
+            padding: 10px 20px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        &:hover {
+            &:before, &:after {
+                display: block;
             }
         }
     }

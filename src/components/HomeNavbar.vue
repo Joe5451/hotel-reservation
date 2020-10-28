@@ -3,23 +3,23 @@
         <ul class="d-flex justify-content-center">
             <li>
                 <img src="../assets/img/dark_link1.png" width="48px" height="48px" alt="link-icon">
-                <router-link to="/">關於我們</router-link>
+                <a>關於我們</a>
             </li>
             <li>
                 <img src="../assets/img/dark_link2.png" width="48px" height="48px" alt="link-icon">
-                <router-link to="/">客房介紹</router-link>
+                <router-link to="/" class="room-intro">客房介紹</router-link>
             </li>
             <li>
                 <img src="../assets/img/dark_link3.png" width="48px" height="48px" alt="link-icon">
-                <router-link to="/">住宿服務</router-link>
+                <a>住宿服務</a>
             </li>
             <li>
                 <img src="../assets/img/dark_link4.png" width="48px" height="48px" alt="link-icon">
-                <router-link to="/">交通指引</router-link>
+                <a>交通指引</a>
             </li>
             <li>
                 <img src="../assets/img/dark_link5.png" width="48px" height="48px" alt="link-icon">
-                <router-link to="/">最新消息</router-link>
+                <a>最新消息</a>
             </li>
         </ul>
     </nav>
@@ -43,9 +43,46 @@
             a {
                 color: #1C1F2D;
                 font-weight: bold;
+                position: relative;
+                cursor: pointer;
+
+                &:before, &:after {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                }
+
+                &:before {
+                    content: '';                    
+                    left: 0;
+                    transform: translate(0, 5px);
+                    border-width: 0 10px 15px;
+                    border-style: solid;
+                    border-color: transparent transparent rgba(149, 156, 196, 0.5);
+                }
+                
+                &:after {
+                    content: '暫未開放';
+                    left: 50%;
+                    transform: translate(-50%, 20px);
+                    background: rgba(149, 156, 196, 0.5);
+                    border-radius: 5px;
+                    color: #2D3047;
+                    width: 100px;
+                    padding: 10px 20px;
+                    text-align: center;
+                }
+
+                &.room-intro:after {
+                    content: '已在該頁面';
+                }
 
                 &:hover {
                     color: #419D78;
+
+                    &:before, &:after {
+                        display: block;
+                    }
                 }
             }
         }
