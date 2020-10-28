@@ -1,4 +1,7 @@
 <template>
+    <!-- <i class="fas fa-calendar-alt"></i>
+    <i class="fas fa-user"></i>
+    <i class="fas fa-utensils"></i> -->
     <div class="position-relative">
         <Navbar />
         <main class="px-lg py-xl" v-if="room">

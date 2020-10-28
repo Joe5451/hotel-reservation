@@ -28,6 +28,11 @@
             </main>
         </div>
         <div class="leaves-bg"></div>
+        <div class="ornament">
+            <div class="brand"><span>訂</span><span>房</span></div>
+            <div class="lantern"><img src="../assets/img/tel.png" alt="tel" width="20ox" height="20px"></div>
+            <div class="lantern"><img src="../assets/img/message.png" alt="message" width="20ox" height="20px"></div>
+        </div>
         <Footer />
     </div>
 </template>
@@ -132,6 +137,109 @@ export default {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+    }
+
+}
+
+.ornament {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    height: 255px;
+    width: 50px;
+
+    .brand, .lantern {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .brand {
+        background: #419D78;
+        color: #2D3047;
+        padding: 15px;
+        font-size: 20px;
+        font-weight: bold;
+        display: flex;
+        height: 91px;
+        width: 51px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 10px;
+        top: 40px;
+        z-index: 1;
+
+        &:before {
+            background: #419D78;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        &:after {
+            height: 40px;
+        }
+    }
+
+    .lantern {
+        background: #2D3047;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+
+        img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        &:before {
+            background: #2D3047;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -40%);
+        }
+
+        &:after {
+            height: 25px;
+        }
+
+        &:nth-child(2) {
+            bottom: 65px;
+        }
+
+        &:nth-child(3) {
+            bottom: 0;
+        }
+        
+    }
+
+    .brand, .lantern {
+        &:before, &:after {
+            content: '';
+            display: block;
+            position: absolute;
+        }
+
+        &:before {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            
+        }
+
+        &:after {
+            width: 5px;
+            background: #2D3047;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 0 0 2.5px 2.5px;
         }
     }
 }
